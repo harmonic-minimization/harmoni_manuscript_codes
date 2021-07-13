@@ -4,7 +4,7 @@ Mina Jamshidi Idaji, ..., Vadim V. Nikulin
 (c) insert the future preprint and ms link here
 
 
-** Code to generate Figure 5:toy examples**
+** Code to generate Figure 3:toy examples**
 panel A: scenario 1
 panel B: scenario 3
 panel C: scenario 4
