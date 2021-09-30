@@ -1,21 +1,24 @@
 """
+-----------------------------------------------------------------------
 Harmoni: a Novel Method for Eliminating Spurious Neuronal Interactions due to the Harmonic Components in Neuronal Data
-Mina Jamshidi Idaji, ..., Vadim V. Nikulin
-(c) insert the future preprint and ms link here
-
-
-** Code to generate Figure  2: non-sin source signal from rsEEG of LEMON data **
+Mina Jamshidi Idaji, Jaunli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
+INSERT THE DOIs
+-----------------------------------------------------------------------
+script for:
+** non-sin source signal from rsEEG of LEMON data **
 
 -----------------------------------------------------------------------
 
-(c) Mina jamshidi Idaji @ Neurolgy Dept, MPI CBS
+(c) Mina Jamshidi (minajamshidi91@gmail.com) @ Neurolgy Dept, MPI CBS, 2021
 https://github.com/minajamshidi
 (c) please cite the above paper in case of using this code for your research
 
 License: MIT License
 -----------------------------------------------------------------------
 
-last modified: 20210615 by \Mina
+last modified: 20210930 by \Mina
+
+
 
 """
 import os.path as op
@@ -24,9 +27,9 @@ from scipy.signal import butter, filtfilt
 import matplotlib.pyplot as plt
 from mne.preprocessing import ICA
 import mne
-from harmoni_tools_meeg import read_eeglab_standard_chanloc, plot_topomap_
-from harmoni_tools_signal import psd
-from harmoni_tools_connectivity import compute_phase_connectivity
+from tools_meeg import read_eeglab_standard_chanloc, plot_topomap_
+from tools_signal import psd
+from tools_connectivity import compute_phase_connectivity
 # -----------------------------------------
 # directory
 # -----------------------------------------
@@ -40,7 +43,9 @@ and put it in the data_dir you specify here.
 condition = 'EC'
 data_dir = '/NOBACKUP/Data/lemon/LEMON_prep/'
 
-subjects_dir = '/NOBACKUP/mne_data/'
+# subjects_dir = '/NOBACKUP/mne_data/'
+subjects_dir = '/data/pt_02076/mne_data/MNE-fsaverage-data/'
+
 subject = 'fsaverage'
 _oct = '6'
 fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-fwd.fif')

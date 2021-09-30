@@ -1,3 +1,26 @@
+"""
+-----------------------------------------------------------------------
+Harmoni: a Novel Method for Eliminating Spurious Neuronal Interactions due to the Harmonic Components in Neuronal Data
+Mina Jamshidi Idaji, Jaunli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
+INSERT THE DOIs
+-----------------------------------------------------------------------
+script for:
+** proof of concept example **
+
+-----------------------------------------------------------------------
+
+(c) Mina Jamshidi (minajamshidi91@gmail.com) @ Neurolgy Dept, MPI CBS, 2021
+https://github.com/minajamshidi
+(c) please cite the above paper in case of using this code for your research
+
+License: MIT License
+-----------------------------------------------------------------------
+
+last modified: 20210930 by \Mina
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+"""
 
 import os.path as op
 import os
@@ -24,11 +47,10 @@ from tools_source_space import *
 from tools_connectivity import *
 from tools_connectivity_plot import *
 from tools_harmonic_removal import *
-from tools_graph import *
 
 # directories and settings -----------------------------------------------------
-subjects_dir = '/NOBACKUP/mne_data/'
-# '/data/pt_02076/mne_data/MNE-fsaverage-data/'
+# subjects_dir = '/NOBACKUP/mne_data/'
+subjects_dir = '/data/pt_02076/mne_data/MNE-fsaverage-data/'
 subject = 'fsaverage'
 _oct = '6'
 src_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-src.fif')
@@ -37,7 +59,8 @@ inv_method = 'eLORETA'
 dir_graphs = '/NOBACKUP/Results/lemon_processed_data/graphs/'
 condition = 'EC'
 dir_adjmat = op.join(dir_graphs, 'AdjacencyMatrices_coh_with_permtest', condition)
-dir_raw_set = '/NOBACKUP/Data/lemon/LEMON_prep/'
+dir_raw_set = '/data/pt_nro109/Share/EEG_MPILMBB_LEMON/EEG_Preprocessed_BIDS_ID/EEG_Preprocessed/'
+    # '/NOBACKUP/Data/lemon/LEMON_prep/'
 # -----------------------------------------------------
 # read the parcellation
 # -----------------------------------------------------

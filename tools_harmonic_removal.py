@@ -48,6 +48,7 @@ def _regress_out_roi(parcel_series_low, parcel_series_high, fs, coh, n, opt_stra
 def regress_out(parcel_series_low, parcel_series_high, fs, n=2, coh=False, opt_strat='grid', mp=True, pool=None):
     n_parc = len(parcel_series_low)
     assert len(parcel_series_high) == n_parc
+    print('the harmonic correction has started, it may take a while ... ')
 
     if mp:
         pool = multiprocessing.Pool() if pool is None else pool

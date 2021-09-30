@@ -1,10 +1,50 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 
 #  --------------------------------  --------------------------------  --------------------------------
 # plotting
 #  --------------------------------  --------------------------------  --------------------------------
+
+class MidpointNormalize(colors.Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        colors.Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
+
+
+
+def plot_matrix(mat, cmap='viridis', cmap_level_n=50, title='', vmin=None, vmax=None, axes=None):
+    from matplotlib import cm as cm
+    cmp = cm.get_cmap(cmap, cmap_level_n)
+    matmin = np.min(mat)
+    matabsmax = np.max(np.abs(mat))
+    if vmax is None:
+        vmax = matabsmax
+    else:
+        vmax = max([vmax, matabsmax])
+    if matmin < 0:
+        cmp = 'RdBu_r'
+    if vmin is None:
+        vmin = matmin
+
+    if axes is None:
+        # caxes = plt.matshow(mat, cmap=cmp, vmin=vmin, vmax=vmax
+        caxes = plt.matshow(mat, cmap=cmp, norm=MidpointNormalize(midpoint=0., vmin=vmin, vmax=vmax))
+
+        plt.colorbar(caxes)
+    else:
+        # caxes = axes.matshow(mat, cmap=cmp, vmin=vmin, vmax=vmax)
+        caxes = axes.matshow(mat, cmap=cmp, norm=MidpointNormalize(midpoint=0., vmin=vmin, vmax=vmax))
+        plt.colorbar(caxes)
+    plt.title(title)
+    plt.grid(False)
 
 
 def plot_3d(x, y, z):
@@ -50,6 +90,11 @@ def plot_boxplot_paired(ax, data1, data2, labels, paired=True, violin=False, not
     ax.yaxis.grid(True)
 
 
+def plot_colorbar2(data, cmap, ax, ori='vertical'):
+    import matplotlib as mpl
+    data = np.sort(data, axis=0)
+    norm = mpl.colors.Normalize(vmin=data[0], vmax=data[-1])
+    cb1 = mpl.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation=ori)
 #  --------------------------------  --------------------------------  --------------------------------
 # saving and loading
 #  --------------------------------  --------------------------------  --------------------------------
@@ -65,3 +110,17 @@ def load_pickle(file):
     with open(file, "rb") as input_file:
         var = pickle.load(input_file)
     return var
+
+
+
+def listdir_restricted(dir_path, string_criterion):
+    """
+    returns a list of the names of the files in dir_path, whose names contains string_criterion
+    :param dir_path: the directory path
+    :param string_criterion: the string which should be in the name of the desired files in dir_path
+    :return: list of file names
+    """
+    import os
+    IDs_all = os.listdir(dir_path)
+    IDs_with_string = [id1 for id1 in IDs_all if string_criterion in id1]
+    return IDs_with_string

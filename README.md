@@ -28,5 +28,9 @@ Here, you can see how the scrpts correspond to the manuscript figures:
 
 * figures 12, 13, 14: lemon_data_analysis.py
 
+additionally:
+
+computing the connectivity of LEMON data: lemon_conn_bandpass.py
+
 
 

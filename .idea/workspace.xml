@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a938a3e6-6e7a-4cdb-84ae-4f6a8bb5a35d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Results/Toys/ReadMe.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Results/Toys/seed_sc1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Results/Toys/seed_sc3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Results/Toys/seed_sc4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Results/Toys/seed_sc5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fsaverage-head/fsaverage-oct6-64ch-inv.fif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fsaverage-head/fsaverage-oct6-fwd.fif" beforeDir="false" />
+    <list default="true" id="1e9ddf8a-fb87-48b1-9431-fc756014a45b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/tools_connectivity_plot.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools_meeg.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools_source_space.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/harmoni_manuscript_codes.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/harmoni_manuscript_codes.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/harmoni_figure3_simulations_toys.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/harmoni_figure4.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/harmoni_figure5_proofconcept.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/harmoni_figure7.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lemon_data_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/lemon_data_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lemon_nonsin_source_exp.py" beforeDir="false" afterPath="$PROJECT_DIR$/lemon_nonsin_source_exp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proof_of_concept.py" beforeDir="false" afterPath="$PROJECT_DIR$/proof_of_concept.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proofconcept_simulated_sesorspace-raw.fif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_connectivity.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_connectivity.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_general.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_general.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_harmonic_removal.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_harmonic_removal.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,28 +28,109 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/proof_of_concept.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="32" column="36" selection-start-line="23" selection-end-line="32" selection-end-column="36" />
+            <state relative-caret-position="270">
+              <caret line="18" column="23" selection-start-line="18" selection-start-column="23" selection-end-line="18" selection-end-column="23" />
+              <folding>
+                <element signature="e#984#1004#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lemon_data_analysis.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="300">
+              <caret line="224" column="50" lean-forward="true" selection-start-line="224" selection-start-column="50" selection-end-line="224" selection-end-column="50" />
+              <folding>
+                <element signature="e#984#1004#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lemon_conn_bandpass.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="18" column="23" selection-start-line="18" selection-start-column="23" selection-end-line="18" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../meeg_processing_python/tools_meeg.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="4" selection-start-line="4" selection-end-line="24" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../meeg_processing_python/tools_general.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="184">
+              <caret line="58" selection-start-line="58" selection-end-line="68" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tools_general.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1390">
+              <caret line="96" column="78" selection-start-line="96" selection-start-column="78" selection-end-line="96" selection-end-column="78" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../meeg_processing_python/tools_connectivity_plot.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="493" selection-start-line="455" selection-end-line="493" />
+              <folding>
+                <element signature="e#2866#6126#0" />
+                <element signature="e#6480#8814#0" />
+                <element signature="e#9553#18591#0" />
+                <element signature="e#30375#34404#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>plot_mne_circular_connectivity</find>
+      <find>plot_connectivity_bipartite_2_prime</find>
+      <find>plot_colorbar2</find>
+      <find>_build_edge_verts_bipartite</find>
+      <find>read_eeglab_standard_chanloc</find>
+      <find>listdir_restricted</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/.idea/harmoni_manuscript_codes.iml" />
-        <option value="$PROJECT_DIR$/.idea/modules.xml" />
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
-        <option value="$PROJECT_DIR$/.idea/misc.xml" />
+        <option value="$PROJECT_DIR$/tools_connectivity_plot.py" />
+        <option value="$PROJECT_DIR$/lemon_nonsin_source_exp.py" />
+        <option value="$PROJECT_DIR$/tools_general.py" />
+        <option value="$PROJECT_DIR$/lemon_data_analysis.py" />
+        <option value="$PROJECT_DIR$/lemon_conn_bandpass.py" />
+        <option value="$PROJECT_DIR$/proof_of_concept.py" />
       </list>
     </option>
   </component>
@@ -53,7 +145,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -65,6 +156,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -87,20 +179,25 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a938a3e6-6e7a-4cdb-84ae-4f6a8bb5a35d" name="Default Changelist" comment="" />
-      <created>1632991130415</created>
+      <changelist id="1e9ddf8a-fb87-48b1-9431-fc756014a45b" name="Default Changelist" comment="" />
+      <created>1632996404522</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1632991130415</updated>
+      <updated>1632996404522</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="25" width="1926" height="1058" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24960506" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24960506" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" weight="0.32941177" />
+      <window_info anchor="bottom" id="Python Console" visible="true" weight="0.32941177" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -108,20 +205,117 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32941177" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/../../venv/lib/python3.6/site-packages/IPython/core/interactiveshell.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="3325" selection-start-line="3325" selection-end-line="3325" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../meeg_processing_python/tools_connectivity_plot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="493" selection-start-line="455" selection-end-line="493" />
+          <folding>
+            <element signature="e#2866#6126#0" />
+            <element signature="e#6480#8814#0" />
+            <element signature="e#9553#18591#0" />
+            <element signature="e#30375#34404#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_connectivity_plot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="489" selection-end-line="588" selection-end-column="35" />
+          <folding>
+            <element signature="e#122#1847#0" />
+            <element signature="e#2424#5684#0" />
+            <element signature="e#9119#18157#0" />
+            <element signature="e#18363#22392#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/harmoni_figure5_proofconcept.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="266" selection-start-line="266" selection-end-line="268" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../meeg_processing_python/tools_meeg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="4" selection-start-line="4" selection-end-line="24" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_meeg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../meeg_processing_python/tools_general.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="58" selection-start-line="58" selection-end-line="68" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_general.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1390">
+          <caret line="96" column="78" selection-start-line="96" selection-start-column="78" selection-end-line="96" selection-end-column="78" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lemon_nonsin_source_exp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="46" column="37" selection-start-line="46" selection-start-column="37" selection-end-line="46" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lemon_data_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="224" column="50" lean-forward="true" selection-start-line="224" selection-start-column="50" selection-end-line="224" selection-end-column="50" />
+          <folding>
+            <element signature="e#984#1004#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lemon_conn_bandpass.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="18" column="23" selection-start-line="18" selection-start-column="23" selection-end-line="18" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/proof_of_concept.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="32" column="36" selection-start-line="23" selection-end-line="32" selection-end-column="36" />
+        <state relative-caret-position="270">
+          <caret line="18" column="23" selection-start-line="18" selection-start-column="23" selection-end-line="18" selection-end-column="23" />
+          <folding>
+            <element signature="e#984#1004#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -1,5 +1,8 @@
 import numpy as np
 from tools_signal import hilbert_
+import multiprocessing
+from functools import partial
+import itertools
 
 
 def compute_phase_connectivity(ts1, ts2, n, m, measure='coh', axis=1, type1='complex'):
@@ -205,3 +208,22 @@ def compute_phaseconn_with_permtest(ts1, ts2, n, m, sfreq, seg_len=None, plv_typ
         return plv_true, pvalue, plv_perm
     else:
         return plv_true
+
+
+
+def compute_conn(n, m, fs, plv_type, signals):
+    x = signals[0]
+    y = signals[1]
+    conn = np.mean(compute_phaseconn_with_permtest(x, y, n, m, fs, plv_type=plv_type))
+    return conn
+
+
+def compute_conn_2D_parallel(ts_list1, ts_list2, n, m, fs, plv_type):
+    list_prod = list(itertools.product(ts_list1, ts_list2))
+    pool = multiprocessing.Pool()
+    func = partial(compute_conn, n, m, fs, plv_type)
+    conn_mat_beta_corr_list = pool.map(func, list_prod)
+    pool.close()
+    pool.join()
+    conn_mat = np.asarray(conn_mat_beta_corr_list).reshape((len(ts_list1), len(ts_list2)))
+    return conn_mat
