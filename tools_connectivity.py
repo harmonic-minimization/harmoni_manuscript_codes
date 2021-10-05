@@ -227,3 +227,110 @@ def compute_conn_2D_parallel(ts_list1, ts_list2, n, m, fs, plv_type):
     pool.join()
     conn_mat = np.asarray(conn_mat_beta_corr_list).reshape((len(ts_list1), len(ts_list2)))
     return conn_mat
+
+
+def _synch_perm(n, m, seg_len, measure, type1, sig):
+    x = sig[0]  # x.ndim = 1
+    y = sig[1]
+    seed1 = sig[2]
+
+    if seed1 == -1:
+        x_perm = x
+    else:
+        n_samples = x.shape[0]
+        n_seg = int(n_samples // seg_len)
+        n_omit = int(n_samples % seg_len)
+        x_rest = x[-n_omit:] if n_omit > 0 else np.empty((0,))
+        x_truncated = x[:-n_omit] if n_omit > 0 else x
+        x_truncated = x_truncated.reshape((1, seg_len, n_seg), order='F')
+        np.random.seed(seed=seed1)
+        perm1 = np.random.permutation(n_seg)
+        x_perm = x_truncated[:, :, perm1].reshape((1, n_samples - n_omit), order='F')
+        x_perm = np.concatenate((x_perm.ravel(), x_rest))
+
+    return compute_phase_connectivity(x_perm, y, n, m, measure=measure, type1=type1)[0]
+
+
+def compute_synch_permtest_parallel(ts1, ts2, n, m, sfreq, ts1_ts2_eq=False, type1='abs', measure='coh',
+                                    seg_len=None, iter_num=1000):
+    """
+    parallelized permutation test for multiple channels
+
+    :param ts1: [nchan1 x time]
+    :param ts2: [nchan2 x time]
+    :param n:
+    :param m:
+    :param sfreq:
+    :param ts1_ts2_eq: if True then only the upper triangle is computed. Put True only if ts1 and ts2 are identical and n = m = 1
+    :param type1: {'abs', 'imag'}.
+    :param measure: {'coh', 'plv'}
+    :param seg_len: length of the segment for permutation testing
+    :param iter_num: number of iterations for the perm test
+    :return:
+    conn_orig [nchan1 x nchan2]: the original true values of the conenctivity
+    pvalue [nchan1 x nchan2]: the pvalues of the connections
+    """
+    if ts1.ndim == 1:
+        ts1 = ts1[np.newaxis, :]
+    if ts2.ndim == 1:
+        ts2 = ts2[np.newaxis, :]
+
+    if not np.iscomplexobj(ts1):
+        ts1 = hilbert_(ts1)
+    if not np.iscomplexobj(ts2):
+        ts2 = hilbert_(ts2)
+
+    seg_len = int(sfreq) if seg_len is None else seg_len
+    nchan1 = ts1.shape[0]
+    nchan2 = ts2.shape[0]
+
+    seeds = np.random.randint(low=0, high=2 ** 32, size=(iter_num,))
+    seeds = np.append(-np.ones((1,), dtype='int64'), seeds)
+    list_prod = list(itertools.product(ts1, ts2, seeds))
+
+    if ts1_ts2_eq:
+        ind_triu = np.triu_indices(nchan1, k=1)
+        l1 = np.reshape(np.arange(len(list_prod)), (nchan1, nchan2, iter_num + 1))
+        list_prod_ind = list(l1[ind_triu].ravel())
+        list_prod = [list_prod[i] for i in list_prod_ind]
+
+    pool = multiprocessing.Pool()
+    func = partial(_synch_perm, n, m, seg_len, measure, type1)
+    synch = pool.map(func, list_prod)
+    pool.close()
+
+    if ts1_ts2_eq:
+        c1 = np.asarray(synch).reshape((-1, iter_num + 1))
+        conn_mat = np.zeros((nchan1, nchan2, iter_num + 1))
+        conn_mat[ind_triu] = c1
+        conn_mat = conn_mat + np.transpose(conn_mat, axes=(1, 0, 2))
+    else:
+        conn_mat = np.asarray(synch).reshape((nchan1, nchan2, iter_num + 1))
+    conn_mat = np.abs(conn_mat)
+    conn_orig = conn_mat[:, :, 0]
+    conn_perm = conn_mat[:, :, 1:]
+
+    pvalue = np.zeros((nchan1, nchan2))
+    pvalue_rayleigh = np.zeros((nchan1, nchan2))
+    if ts1_ts2_eq:
+        for i1 in range(nchan1):
+            for i2 in range(i1 + 1, nchan2):
+                pvalue[i1, i2] = np.mean(conn_perm[i1, i2, :] >= conn_orig[i1, i2])
+
+                plv_perm1 = np.squeeze(conn_perm[i1, i2, :])
+                plv_perm1_mean = np.mean(plv_perm1)
+                plv_stat = conn_orig[i1, i2] / plv_perm1_mean
+                pvalue_rayleigh[i1, i2] = np.exp(-np.pi * plv_stat ** 2 / 4)
+
+        pvalue = pvalue + pvalue.T
+        pvalue_rayleigh = pvalue_rayleigh + pvalue_rayleigh.T
+    else:
+        for i1 in range(nchan1):
+            for i2 in range(nchan2):
+                pvalue[i1, i2] = np.mean(conn_perm[i1, i2, :] >= conn_orig[i1, i2])
+
+                plv_perm1 = np.squeeze(conn_perm[i1, i2, :])
+                plv_perm1_mean = np.mean(plv_perm1)
+                plv_stat = conn_orig[i1, i2] / plv_perm1_mean
+                pvalue_rayleigh[i1, i2] = np.exp(-np.pi * plv_stat ** 2 / 4)
+    return conn_orig, pvalue, pvalue_rayleigh

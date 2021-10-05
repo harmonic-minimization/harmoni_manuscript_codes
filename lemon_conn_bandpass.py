@@ -1,7 +1,7 @@
 """
 -----------------------------------------------------------------------
 Harmoni: a Novel Method for Eliminating Spurious Neuronal Interactions due to the Harmonic Components in Neuronal Data
-Mina Jamshidi Idaji, Jaunli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
+Mina Jamshidi Idaji, Juanli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
 INSERT THE DOIs
 -----------------------------------------------------------------------
 script for:
@@ -38,30 +38,24 @@ import scipy.signal as signal
 import scipy.stats as stats
 import mne
 import mne.minimum_norm as minnorm
-from mne.beamformer import make_lcmv, apply_lcmv_raw
 
 from tools_general import *
-from tools_signal import *
+from tools_connectivity_plot import *
+from tools_connectivity import *
+from tools_lemon_dataset import *
 from tools_meeg import *
 from tools_source_space import *
-from tools_connectivity import *
-from tools_connectivity_plot import *
-from tools_lemon_dataset import *
 from tools_harmonic_removal import *
 
 # directories and settings -----------------------------------------------------
 subjects_dir = '/data/pt_02076/mne_data/MNE-fsaverage-data/'
-# '/NOBACKUP/mne_data/'
 subject = 'fsaverage'
 _oct = '6'
 src_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-src.fif')
 fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-fwd.fif')
 raw_set_dir = '/data/pt_nro109/EEG_LEMON/BIDS_IDS/EEG_Preprocessed_BIDS/'
-#'/data/p_02076/Data/LEMON/Juanli-LEMON/EEG_preprocessedData_EC/'
-#'/NOBACKUP/Data/lemon/Juanli_data/'
 inv_method = 'eLORETA'
 save_dir_graphs = '/data/pt_02076/LEMON/lemon_processed_data/networks_bandpass/Beamformer/EC/'
-# '/NOBACKUP/Results/lemon_processed_data/graphs/'
 meta_file_path = '/data/pt_02076/LEMON/INFO/META_File_IDs_Age_Gender_Education_Drug_Smoke_SKID_LEMON.csv'
 
 
@@ -97,15 +91,11 @@ src = fwd_fixed['src']
 # read raw from set
 # ---------------------------------------------------
 ids1 = select_subjects('young', 'male', 'right', meta_file_path)
-#IDs = listdir_restricted(raw_set_dir, '-EC-pruned with ICA.set')
 IDs = listdir_restricted(raw_set_dir, '_EC.set')
-# IDs = [id[:-23] for id in IDs]
 IDs = [id[:-7] for id in IDs]
 IDs = np.sort(np.intersect1d(IDs, ids1))
-tstart = time.time()
 for i_subj, subj in enumerate(IDs[30:60]):
     print(' ******** subject %d/%d ************' % (i_subj + 1, len(IDs)))
-    # raw_name = op.join(raw_set_dir, subj + '-EC-pruned with ICA.set')
     raw_name = op.join(raw_set_dir, subj + '_EC.set')
     raw = read_eeglab_standard_chanloc(raw_name) # , bads=['VEOG']
     assert (sfreq == raw.info['sfreq'])
@@ -113,21 +103,15 @@ for i_subj, subj in enumerate(IDs[30:60]):
     raw_info = raw.info
     clab = raw_info['ch_names']
     n_chan = len(clab)
-    # inv_op = inverse_operator(raw_data.shape, fwd, raw_info)
-
-    data_cov = mne.compute_raw_covariance(raw, tmin=0)
-    filters = make_lcmv(raw_info, fwd, data_cov, reg=0.05,
-                        noise_cov=None, pick_ori='max-power',
-                        weight_norm='unit-noise-gain', rank=None)
+    inv_op = inverse_operator(raw_data.shape, fwd, raw_info)
 
     # alpha sources --------
     raw_alpha = raw.copy()
     raw_alpha.load_data()
     raw_alpha.filter(l_freq=8, h_freq=12, method='iir', iir_params=iir_params)
     raw_alpha.set_eeg_reference(projection=True)
-    # stc_alpha_raw = mne.minimum_norm.apply_inverse_raw(raw_alpha, inverse_operator=inv_op,
-    #                                                  lambda2=0.05, method=inv_method, pick_ori='normal')
-    stc_alpha_raw = apply_lcmv_raw(raw_alpha, filters)
+    stc_alpha_raw = mne.minimum_norm.apply_inverse_raw(raw_alpha, inverse_operator=inv_op,
+                                                       lambda2=0.05, method=inv_method, pick_ori='normal')
     parcel_series_alpha = extract_parcel_time_series(stc_alpha_raw.data, labels, src,
                                                      mode='svd', n_select=1, n_jobs=1)
     parcel_alpha = np.squeeze(np.asarray(parcel_series_alpha))
@@ -136,10 +120,8 @@ for i_subj, subj in enumerate(IDs[30:60]):
     raw_beta.load_data()
     raw_beta.filter(l_freq=16, h_freq=24, method='iir', iir_params=iir_params)
     raw_beta.set_eeg_reference(projection=True)
-    stc_beta_raw = apply_lcmv_raw(raw_beta, filters)
-    # stc_beta_raw = mne.minimum_norm.apply_inverse_raw(raw_beta, inverse_operator=inv_op,
-    #                                                  lambda2=0.1, method=inv_method, pick_ori='normal')
-    # plot_stc_power(stc_beta_raw, subjects_dir, hemi='both', clim='whole')
+    stc_beta_raw = mne.minimum_norm.apply_inverse_raw(raw_beta, inverse_operator=inv_op,
+                                                      lambda2=0.05, method=inv_method, pick_ori='normal')
     parcel_series_beta = extract_parcel_time_series(stc_beta_raw.data, labels, src,
                                                     mode='svd', n_select=1, n_jobs=1)
     parcel_beta = np.squeeze(np.asarray(parcel_series_beta))
@@ -166,7 +148,6 @@ for i_subj, subj in enumerate(IDs[30:60]):
     save_pickle(save_dir_graphs + subj + '-beta-beta', conn_mat_beta)
     t_beta = time.time() - t1
     print('beta-beta computation ended in', t_beta / 60, ' minutes-----------')
-
 
     t1 = time.time()
     print('alpha-beta computation started-----------')
@@ -195,6 +176,5 @@ for i_subj, subj in enumerate(IDs[30:60]):
     t_alpha_beta = time.time() - t1
     print('alpha-beta-corr computation ended in', t_alpha_beta / 60, ' minutes-----------')
 
-t_stop = time.time() - tstart
 
 

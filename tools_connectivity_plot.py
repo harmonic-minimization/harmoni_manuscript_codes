@@ -539,6 +539,7 @@ def plot_connectivity_bipartite_2_prime(con, labels, strength_perc, edge_cmp, fi
     # edge and node colormap ---------
     vmin = edge_thresh if vmin is None else vmin
     vmax = np.max(con) if vmax is None else vmax
+    print(vmin, vmax)
     edge_cmap_range = np.arange(vmin, vmax, step=0.001)
     cmap_edge = plt.get_cmap(edge_cmp, len(edge_cmap_range))
 

@@ -39,3 +39,18 @@ def plot_topomap_(map, info, title='', vmax=None, vmin=None, ax=None, cmap=None,
     plt.title(title)
     if ax is None:
         return fig
+
+#  --------------------------------  --------------------------------  --------------------------------
+# forward and inverse
+#  --------------------------------  --------------------------------  --------------------------------
+
+def inverse_operator(size1, fwd, raw_info):
+    import mne
+    from mne.minimum_norm import make_inverse_operator
+    data = np.random.normal(loc=0.0, scale=1.0, size=size1)
+    raw1 = mne.io.RawArray(data, raw_info)
+    noise_cov = mne.compute_raw_covariance(raw1, tmin=0, tmax=None)
+
+    inv_op = make_inverse_operator(raw_info, fwd, noise_cov, fixed=False, loose=0.2, depth=0.8)
+    return inv_op
+

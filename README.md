@@ -1,5 +1,11 @@
 # Codes for the Manuscript
 
+![version](https://img.shields.io/badge/version-0.0.1-blue)
+
+<p align="center">
+  <img src="harmoni_logo.png"/>
+</p>
+
 Harmoni: a Novel Method for Eliminating Spurious Neuronal Interactions due to the Harmonic Components in Neuronal Data
 Mina Jamshidi Idaji, Jaunli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
 INSERT THE DOIs
@@ -14,23 +20,23 @@ License: MIT License
 
 Here, you can see how the scrpts correspond to the manuscript figures:
 
-* figure 2: sawtooth_toy.py
+* figure 2: sawtooth_toy.py [ok]
 
-* figure 3: harmoni_blockdiagram.py
+* figure 3: harmoni_blockdiagram.py [ok]
 
-* figure 8: simulations_toys.py
+* figure 8: simulations_toys.py [ok]
 
-* figure 9: proof_of_concept.py
+* figure 9: proof_of_concept.py [ok]
 
 * figure 10: realistic simulation results
 
-* figure 11: lemon_nonsin_source_exp.py
+* figure 11: lemon_nonsin_source_exp.py [ok]
 
-* figures 12, 13, 14: lemon_data_analysis.py
+* figures 12, 13, 14: lemon_data_analysis.py [ok]
 
 additionally:
 
-computing the connectivity of LEMON data: lemon_conn_bandpass.py
+* computing the connectivity of LEMON data: lemon_conn_bandpass.py [ok]
 
 
 

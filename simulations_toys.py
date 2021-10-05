@@ -104,9 +104,9 @@ from scipy import stats
 from tools_harmonic_removal import *
 
 
-def remove_harmonic(ts1, ts2, sfreq):
+def remove_harmonic(ts1, ts2, sfreq, n=2):
     ts1_h = hilbert_(ts1)
-    ts1_ = np.abs(ts1_h) * np.exp(1j * 2 * np.angle(ts1_h))
+    ts1_ = np.abs(ts1_h) * np.exp(1j * n * np.angle(ts1_h))
     ts1_ = ts1_ / np.std(np.real(ts1_))
     ts2_ = hilbert_(ts2) / np.std(np.real(ts2))
 
@@ -118,7 +118,7 @@ def remove_harmonic(ts1, ts2, sfreq):
 # --------------------
 # Scenario
 # --------------------
-scenario = 1  # the scenario to be simulated - pls check the header for the scenario descriptions
+scenario = 2  # the scenario to be simulated - pls check the header for the scenario descriptions
 
 # in the following we encode the scenario in the parameters identifying which components exist in the signals
 if scenario == 1:
@@ -159,7 +159,7 @@ path_save_fig = ''  # fill this in, if you wanna save the figures. Otherwise lea
 
 # in case you have the seeds for the simulations, fill this in. Otherwise leave it as ''
 # path_seeds = ''
-path_seeds = '/data/p_02076/CODES/Codes_CurrentlyWorking/EEG_Networks/build_nets_python36/harmoni/harmoni_manuscript_codes/Results/Toys/seed_sc' + str(scenario)
+path_seeds = ''
 # --------------------
 # parameters
 # --------------------
