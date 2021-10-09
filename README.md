@@ -15,7 +15,7 @@ https://doi.org/10.1101/2021.10.06.463319
 
 (c) Mina Jamshidi (minajamshidi91@gmail.com) @ Neurolgy Dept, MPI CBS, 2021
 https://github.com/minajamshidi
-(c) please cite the above paper in case of using this code for your research
+(c) please cite the above paper in case of adaptation and/or using this code for your research
 
 -----------------------------------------------------------------------
 
