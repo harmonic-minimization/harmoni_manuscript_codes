@@ -1,8 +1,8 @@
 """
 -----------------------------------------------------------------------
 Harmoni: a Novel Method for Eliminating Spurious Neuronal Interactions due to the Harmonic Components in Neuronal Data
-Mina Jamshidi Idaji, Jaunli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
-INSERT THE DOIs
+Mina Jamshidi Idaji, Juanli Zhang, Tilman Stephani, Guido Nolte, Klaus-Robert Mueller, Arno Villringer, Vadim V. Nikulin
+https://doi.org/10.1101/2021.10.06.463319
 -----------------------------------------------------------------------
 script for:
 ** Lemon Data analysis **
@@ -325,4 +325,5 @@ plot_scatterplot_linearReg_bootstrap(x, perc_change, ax, xlabel='initial value',
 
 print('t-asymm=', t_asymm, 'p-asymm=', p_asymm)
 print('pval-perc-change=', pval_perc_change, 'r-obs=', r_obs, 'H0=', r0)
+
 
