@@ -34,7 +34,7 @@ Using Harmoni, one can build conenctivity maps, in which the effect of harmonics
 You should first install harmoni:
 
 ```bash
-$ pipe install harmoni
+$ pip install harmoni
 ```
 
 
