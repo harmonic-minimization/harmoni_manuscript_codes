@@ -22,6 +22,7 @@ last modified: 20211004 by \Mina
 -----------------------------------------------------------------------
 """
 
+
 import os.path as op
 import os
 import itertools
@@ -34,16 +35,14 @@ import matplotlib
 import pandas as pd
 import numpy as np
 from numpy import pi
-
 import scipy.stats as stats
-
 from scipy.signal import butter
 
 from tools_general import *
 from tools_source_space import *
 from tools_connectivity import *
 from tools_connectivity_plot import *
-from tools_harmonic_removal import *
+
 
 # directories and settings -----------------------------------------------------
 # fill in these directories with your own data directories
@@ -66,6 +65,8 @@ and put it in the data_dir you specify here.
 # -----------------------------------------------------
 # read the parcellation
 # -----------------------------------------------------
+
+
 parcellation = dict(name='Schaefer2018_100Parcels_7Networks_order', abb='Schaefer100')
 labels = mne.read_labels_from_annot(subject, subjects_dir=subjects_dir, parc=parcellation['name'])
 labels = labels[:-2]

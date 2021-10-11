@@ -45,7 +45,7 @@ from tools_connectivity import *
 from tools_lemon_dataset import *
 from tools_meeg import *
 from tools_source_space import *
-from tools_harmonic_removal import *
+from harmoni.harmonitools import harmonic_removal
 
 # directories and settings -----------------------------------------------------
 subjects_dir = '/data/pt_02076/mne_data/MNE-fsaverage-data/'
@@ -127,7 +127,7 @@ for i_subj, subj in enumerate(IDs[30:60]):
     parcel_beta = np.squeeze(np.asarray(parcel_series_beta))
 
     # regress out --------
-    parcel_series_beta_corr = regress_out(parcel_series_alpha, parcel_series_beta, int(sfreq), mp=True)
+    parcel_series_beta_corr = harmonic_removal(parcel_series_alpha, parcel_series_beta, int(sfreq), mp=True)
     parcel_beta_corr = np.squeeze(np.asarray(parcel_series_beta_corr))
 
     # conn matrices --------

@@ -46,7 +46,6 @@ from tools_connectivity_plot import *
 
 
 
-
 # subjects_dir = '/NOBACKUP/mne_data/'
 subjects_dir = '/data/pt_02076/mne_data/MNE-fsaverage-data/'
 

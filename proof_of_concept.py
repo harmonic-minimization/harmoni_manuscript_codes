@@ -37,8 +37,8 @@ from tools_connectivity_plot import *
 from tools_connectivity import *
 from tools_meeg import *
 from tools_source_space import *
-from tools_harmonic_removal import *
 from tools_general import *
+from harmoni.harmonitools import harmonic_removal
 
 
 # -----------------------------------------
@@ -53,8 +53,8 @@ subject = 'fsaverage'
 _oct = '6'
 fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-64ch-fwd.fif')
 inv_op_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-64ch-inv.fif')
-simulated_data_dir = '../simulated_data/proof_of_concept_data'
-raw_dir = '../simulated_data/proofconcept_simulated_sesorspace-raw.fif'
+simulated_data_dir = '../harmoni-supplementary-data/simulated_data/proof_of_concept_data'
+raw_dir = '../harmoni-supplementary-data/simulated_data/proofconcept_simulated_sesorspace-raw.fif'
 
 # -----------------------------------------
 # set parameters
@@ -122,7 +122,7 @@ parcel_series_beta = extract_parcel_time_series(stc_beta_raw.data, labels, src, 
 # Harmoni --> minimization stage: regress out alpha from beta in each ROI
 # --------------------------------------------------------------------
 
-parcel_series_beta_corr = regress_out(parcel_series_alpha, parcel_series_beta, int(fs), n=2, mp=True)
+parcel_series_beta_corr = harmonic_removal(parcel_series_alpha, parcel_series_beta, int(fs), n=2, mp=True)
 
 # --------------------------------------------------------------------
 # regress out alpha from beta pair-wise

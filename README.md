@@ -1,6 +1,6 @@
 # Codes for the Manuscript
 
-![version](https://img.shields.io/badge/version-1.0-blue)
+![version](https://img.shields.io/badge/version-1.1-blue)
 ![Python](https://img.shields.io/badge/Python-3.6-green)
 ![license](https://img.shields.io/badge/license-MIT-orange)
 
@@ -31,6 +31,13 @@ Using Harmoni, one can build conenctivity maps, in which the effect of harmonics
 
 <h3>Codes and the manuscript figures</h3>
 
+You should first install harmoni:
+
+```bash
+$ pipe install harmoni
+```
+
+
 Here, you can see how the scrpts correspond to the manuscript figures:
 
 * figure 2: sawtooth_toy.py
@@ -55,7 +62,9 @@ additionally:
 
 <h3>Versions</h3>
 
-###### version 1.0
-`Oct. 2021` Codes contributing to the first bioRxiv preprint at xxDOIxx
+###### version 1.X
+`Oct. 2021` Codes contributing to the first bioRxiv preprint at https://doi.org/10.1101/2021.10.06.463319 
+
+
 
 

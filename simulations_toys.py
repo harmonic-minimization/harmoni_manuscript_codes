@@ -102,18 +102,7 @@ from tools_general import *
 from tools_connectivity import *
 from scipy import stats
 from tools_harmonic_removal import *
-
-
-def remove_harmonic(ts1, ts2, sfreq, n=2):
-    ts1_h = hilbert_(ts1)
-    ts1_ = np.abs(ts1_h) * np.exp(1j * n * np.angle(ts1_h))
-    ts1_ = ts1_ / np.std(np.real(ts1_))
-    ts2_ = hilbert_(ts2) / np.std(np.real(ts2))
-
-    plv_sigx_yres_c_phi_all, c_opt, phi_opt = optimize_1_gridsearch(ts2_, ts1_, sfreq, True, return_all=True)
-    ts2_corr = ts2_ - c_opt * np.exp(1j * phi_opt) * ts1_
-    return ts2_corr
-
+from harmoni.harmonitools import harmonic_removal_simple
 
 # --------------------
 # Scenario
@@ -309,9 +298,9 @@ for n_iter in range(max_iter):
     sig2_y = filtfilt(b20, a20, sig2)
 
     # optimization for sig1 and sig2 -------------
-    y_sig1_res = remove_harmonic(sig1_x, sig1_y, fs)
+    y_sig1_res = harmonic_removal_simple(sig1_x, sig1_y, fs)
 
-    y_sig2_res = remove_harmonic(sig2_x, sig2_y, fs)
+    y_sig2_res = harmonic_removal_simple(sig2_x, sig2_y, fs)
 
     # compute the synchronization indices
     # we use the absolute coherency as the metric
