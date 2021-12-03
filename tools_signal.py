@@ -87,7 +87,8 @@ def hilbert_(x, axis=1):
     x_zp, n_zp = zero_pad_to_pow2(x, axis=axis)
     x_zp = np.real(x_zp)
     x_h = hilbert(x_zp, axis=axis)
-    x_h = x_h[:, :-n_zp] if axis == 1 else x_h[:-n_zp, :]
+    if n_zp > 0:
+        x_h = x_h[:, :-n_zp] if axis == 1 else x_h[:-n_zp, :]
     return x_h
 
 
@@ -143,3 +144,44 @@ def psd(data, fs, f_max=None, overlap_perc=0.5, freq_res=0.5, axis=1, plot=True,
         plt.grid(True, ls='dotted')
         return f, pxx, (fig, ax, line)
     return f, pxx
+
+#  --------------------------------  --------------------------------  --------------------------------
+# filtering and filters
+#  --------------------------------  --------------------------------  --------------------------------
+
+def morlet_filter(data, sfreq, freq_min, freq_max, freq_res=0.5, n_jobs=1, n_cycles='auto'):
+    """
+    morlet filtering with linearly spaced frequency bins, for multi-channel data
+    :param data: np.ndarray . [channel x time]
+    :param sfreq: int . sampling frequency
+    :param freq_min:
+    :param freq_max:
+    :param freq_res: frequency resolution
+    :param n_jobs:
+    :return: TF of data - complex
+    """
+    from mne.time_frequency import tfr_array_morlet
+    nchan, nsample = data.shape
+    data = np.reshape(data, (1, nchan, nsample))
+    freq_n = int((freq_max - freq_min) / freq_res) + 1
+    freqs, step = np.linspace(freq_min, freq_max, num=freq_n, retstep=True, endpoint=True)
+    if n_cycles == 'auto':
+        n_cycles = freqs / 2.
+    data_tfr = tfr_array_morlet(data, sfreq, freqs, n_cycles=n_cycles, zero_mean=True,
+                                use_fft=True, decim=1, output='complex', n_jobs=n_jobs, verbose=None)
+    return data_tfr[0, :, :], freqs
+
+
+def filtfilt_mirror(b, a, data, axis=-1):
+    from scipy.signal import filtfilt
+    axis = data.ndim - 1 if axis == -1 else axis
+    n_sample = data.shape[axis]
+    data_flip_neg = -np.flip(data, axis=axis)
+    data_mirror = np.concatenate((data_flip_neg, data, data_flip_neg), axis=axis)
+    data_filt = filtfilt(b, a, data_mirror, axis=axis)
+    indices = {axis: np.arange(n_sample, 2*n_sample, dtype='int')}
+    ix = tuple(indices.get(dim, slice(None)) for dim in range(data_filt.ndim))
+    data_filt_cut = data_filt[ix]
+    return data_filt_cut
+
+

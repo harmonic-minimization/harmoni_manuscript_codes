@@ -101,13 +101,12 @@ from tools_simulations import data_fun_pink_noise, filtered_randn, produce_nm_ph
 from tools_general import *
 from tools_connectivity import *
 from scipy import stats
-from tools_harmonic_removal import *
 from harmoni.harmonitools import harmonic_removal_simple
 
 # --------------------
 # Scenario
 # --------------------
-scenario = 2  # the scenario to be simulated - pls check the header for the scenario descriptions
+scenario = 1  # the scenario to be simulated - pls check the header for the scenario descriptions
 
 # in the following we encode the scenario in the parameters identifying which components exist in the signals
 if scenario == 1:
@@ -153,7 +152,7 @@ path_seeds = ''
 # parameters
 # --------------------
 fs = 256  # sampling frequency
-n_samples = int(1 * 60 * fs)  # number of time samples
+n_samples = int(60*fs)  # number of time samples
 times = np.arange(0, n_samples)/fs  # the time points - used for plotting purpose
 max_iter = 50  # number of interactions
 c_y2 = 1  # the weight of y2 in the signal
@@ -213,7 +212,7 @@ for n_iter in range(max_iter):
     # x1 is the alpha component of sig1 - produced by band-pass filtering random noise
     x1 = filtered_randn(8, 12, fs, n_samples)
     if x1_x3_coupling:  # if sig1 and sig2 are coupled, generate x3 by shifting the phase of x1
-        x3 = produce_nm_phase_locked_sig(x1, dphi_x3, 1, 1, [8, 12], fs)
+        x3 = produce_nm_phase_locked_sig(x1, dphi_x3, 1, 1, [8, 12], fs, nonsin_mode=1)
     else:  # otherwise, also generate x3 by band-pass filtering random noise
         x3 = filtered_randn(8, 12, fs, n_samples)
 
@@ -225,11 +224,11 @@ for n_iter in range(max_iter):
     y2 = filtered_randn(16, 24, fs, n_samples)
     if y2_y4_exist:  # if y2 and y4 are contained in sig1 and sig2:
         if y2_y4_coupling:  # if y2 and y4 are coupled, generate y4 by phase-shifting y2
-            y4 = produce_nm_phase_locked_sig(y2, dphi_y4, 1, 1, [16, 24], fs)
+            y4 = produce_nm_phase_locked_sig(y2, dphi_y4, 1, 1, [16, 24], fs, nonsin_mode=1)
         else:  # otherwise, if y2 and y4 are not coupled:
             if scenario == 5 or scenario == 6 or scenario == 7:  # if there is a geneuine CFS:
                 # use phase warping on x1, to generate y4 cross-frequency coupled to x1
-                y4 = produce_nm_phase_locked_sig(sig=x1, phase_lag=dphi_y4, n=1, m=2, wn_base=[8, 12], sfreq=fs)
+                y4 = produce_nm_phase_locked_sig(sig=x1, phase_lag=dphi_y4, n=1, m=2, wn_base=[8, 12], sfreq=fs, nonsin_mode=1)
             else:  # if non of the above cases, generate y4 by band-pass filtering random noise
                 y4 = filtered_randn(16, 24, fs, n_samples)
 
@@ -249,7 +248,7 @@ for n_iter in range(max_iter):
         if scenario == 7:
             y_sig2 = y_sig2 + c_y4 * y4
         else:
-            y_sig1 = y_sig1 + c_y2 * y2
+            y_sig1 = y_sig1 + c_y2 * y2sig1
             y_sig2 = y_sig2 + c_y4 * y4
 
     # --------------------------------------------------------------

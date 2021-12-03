@@ -82,6 +82,20 @@ def _extract_svd_par(data, labels, src, var_perc, n, ind_lbl):
     return component
 
 
+def _extract_mean_par(data, labels, src, ind_lbl):
+    """
+    - apply svd on time series of the voxels of the given parcel
+    - if n=None, as many as the svd components are selected that they explain >=95% of the variance
+    - if n=n_select, n_select components are selected
+    :param data: [vertex x time]
+    :param n:
+    :return:
+    """
+    label = labels[ind_lbl]
+    lbl_idx, _ = label_idx_whole_brain(src, label)
+    data_lbl = data[lbl_idx, :]
+    return np.mean(data_lbl, axis=-1)
+
 def extract_parcel_time_series(data, labels, src, mode='svd', n_select=1, fs=None, freqs=None, n_jobs=1):
     """
 
@@ -116,4 +130,6 @@ def extract_parcel_time_series(data, labels, src, mode='svd', n_select=1, fs=Non
         # for this_parc, label in enumerate(labels):
         #     this_parc == int(n_parc/2) and print('... We are half way done! ;-)')
         #     parcel_series[this_parc] = _extract_svd(data, label, src, n=n_select)
+    if mode == 'mean':
+        pass
     return parcel_series

@@ -53,7 +53,7 @@ src_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-src.
 fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-fwd.fif')
 inv_method = 'eLORETA'
 condition = 'EC'
-dir_adjmat = op.joint('/data/pt_02076/LEMON/lemon_processed_data/networks_bandpass/eloreta/Schaefer100/', condition)
+dir_adjmat = op.join('/data/pt_02076/LEMON/lemon_processed_data/networks_bandpass/eloreta/Schaefer100/', condition)
 dir_raw_set = '/data/pt_nro109/Share/EEG_MPILMBB_LEMON/EEG_Preprocessed_BIDS_ID/EEG_Preprocessed/'
 
 """
@@ -203,8 +203,8 @@ for i_subj, subj in enumerate(ids):
     conn12_corr_all[:, :, i_subj] = conn12_corr[idx_sorted, :][:, idx_sorted]
 
     # asymmetry index from original graphs
-    conn12_symm_idx[i_subj, 0] = np.linalg.norm((conn12 - conn12.T)) / np.sqrt(2) / np.linalg.norm(conn12)
-    conn12_symm_idx[i_subj, 1] = np.linalg.norm((conn12_corr - conn12_corr.T)) / np.sqrt(2) / np.linalg.norm(conn12_corr)
+    conn12_symm_idx[i_subj, 0] = np.linalg.norm((conn12 - conn12.T)) / (2) / np.linalg.norm(conn12)
+    conn12_symm_idx[i_subj, 1] = np.linalg.norm((conn12_corr - conn12_corr.T)) / (2) / np.linalg.norm(conn12_corr)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
