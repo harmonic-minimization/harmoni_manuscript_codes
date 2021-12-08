@@ -145,6 +145,7 @@ def plot_3d(x, y, z):
     ax.plot_surface(t1.T, t2.T, z, cmap='viridis', edgecolor='none')
     return ax
 
+
 def plot_boxplot_paired(ax, data1, data2, labels, paired=True, violin=False, notch=True, datapoints=False):
     # does not open a new figure
     n_points = data1.shape[0]
@@ -185,6 +186,68 @@ def plot_colorbar2(data, cmap, ax, ori='vertical'):
     data = np.sort(data, axis=0)
     norm = mpl.colors.Normalize(vmin=data[0], vmax=data[-1])
     cb1 = mpl.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation=ori)
+
+
+def violin_plot(data, positions, newfig=False):
+    def adjacent_values(vals, q1, q3):
+        upper_adjacent_value = q3 + (q3 - q1) * 1.5
+        upper_adjacent_value = np.clip(upper_adjacent_value, q3, vals[-1])
+
+        lower_adjacent_value = q1 - (q3 - q1) * 1.5
+        lower_adjacent_value = np.clip(lower_adjacent_value, vals[0], q1)
+        return lower_adjacent_value, upper_adjacent_value
+    if newfig:
+        fig = plt.figure()
+    parts = plt.violinplot(
+        data, showmeans=False, showmedians=False,
+        showextrema=False, positions=positions)
+
+    # for pc in parts['bodies']:
+    #     pc.set_facecolor('#D43F3A')
+    #     pc.set_edgecolor('black')
+    #     pc.set_alpha(1)
+
+    quartile1, medians, quartile3 = np.percentile(data, [25, 50, 75], axis=1)
+    whiskers = np.array([
+        adjacent_values(sorted_array, q1, q3)
+        for sorted_array, q1, q3 in zip(data, quartile1, quartile3)])
+    whiskers_min, whiskers_max = whiskers[:, 0], whiskers[:, 1]
+
+    inds = positions
+    plt.scatter(inds, medians, marker='o', color='white', s=30, zorder=3)
+    plt.vlines(inds, quartile1, quartile3, color='k', linestyle='-', lw=5)
+    plt.vlines(inds, whiskers_min, whiskers_max, color='k', linestyle='-', lw=1)
+
+
+def circular_hist(data, alpha=0.2, bins=50, plot_mean=False):
+    cc1, rr1 = np.histogram(data, bins=bins)
+    cc_norm = cc1 / np.sum(cc1)
+    width = rr1[1] - rr1[0]
+    angles = rr1[:-1] + width/2 # Compute the angle each bar is centered on
+
+    ax = plt.subplot(projection='polar')
+
+    # Draw bars
+    bars = plt.bar(
+        x=angles,
+        height=cc_norm,
+        width=width,
+        bottom=None,
+        linewidth=.2,
+        edgecolor="lightblue",
+        alpha=alpha)
+
+    if plot_mean:
+        from scipy.stats import circmean
+        phasemean = circmean(data)
+        bars = plt.bar(
+            x=phasemean,
+            height=np.max(cc_norm),
+            width=width/10,
+            bottom=None,
+            linewidth=1.2,
+            edgecolor="black",
+            alpha=alpha)
 
 
 #  --------------------------------  --------------------------------  --------------------------------

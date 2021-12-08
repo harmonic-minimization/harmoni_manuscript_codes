@@ -347,3 +347,25 @@ def compute_synch_permtest_parallel(ts1, ts2, n, m, sfreq, ts1_ts2_eq=False, typ
                 plv_stat = conn_orig[i1, i2] / plv_perm1_mean
                 pvalue_rayleigh[i1, i2] = np.exp(-np.pi * plv_stat ** 2 / 4)
     return conn_orig, pvalue, pvalue_rayleigh
+
+
+def random_synchronization_dist(n, m, duration, f0=10, fs=256, maxiter=5000):
+    from scipy.signal import butter, filtfilt
+
+    b1, a1 = butter(N=2, Wn=np.array([n*f0-2, n*f0+2]) / fs * 2, btype='bandpass')
+    b2, a2 = butter(N=2, Wn=np.array([m*f0-4, m*f0+4]) / fs * 2, btype='bandpass')
+
+    random_coh = np.zeros((maxiter,))
+    n_samples = int(duration * fs)  # number of time samples
+
+    print('the iterations started. It may take some time ...')
+    for n_iter in range(maxiter):
+        if n_iter == int(maxiter/2):
+            print('half way done')
+        z = np.random.randn(1, n_samples)
+        x = filtfilt(b1, a1, z)
+        z = np.random.randn(1, n_samples)
+        y = filtfilt(b2, a2, z)
+        random_coh[n_iter] = compute_phase_connectivity(x, y, n, m, 'coh', type1='abs')
+    return random_coh
+

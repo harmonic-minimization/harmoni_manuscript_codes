@@ -152,7 +152,8 @@ path_seeds = ''
 # parameters
 # --------------------
 fs = 256  # sampling frequency
-n_samples = int(60*fs)  # number of time samples
+duration = 60  # seconds
+n_samples = int(duration * fs)  # number of time samples
 times = np.arange(0, n_samples)/fs  # the time points - used for plotting purpose
 max_iter = 50  # number of interactions
 c_y2 = 1  # the weight of y2 in the signal
@@ -371,9 +372,14 @@ data = (dict1['synch_sig1x_sig1y'][:, np.newaxis], dict1['synch_sig1x_yres1'][:,
         dict1['synch_sig2x_sig1y'][:, np.newaxis], dict1['synch_sig2x_yres1'][:, np.newaxis],
         dict1['synch_sig1y_sig2y'][:, np.newaxis], dict1['synch_yres1_yres2'][:, np.newaxis])
 
+random_coh = random_synchronization_dist(1, 2, duration, f0=10, fs=fs, maxiter=5000)
+perc95, perc99 = np.percentile(random_coh, [95, 99])
+
 fig = plt.figure()
+plt.hlines([perc95, perc99], 0, 11, linestyle='--', color='lightgray')
 
 plt.boxplot(np.concatenate(data, axis=1), notch=True)
+violin_plot([random_coh], positions=[11])
 
 for k in range(max_iter):
     for i1 in range(0, 9, 2):
