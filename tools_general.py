@@ -113,6 +113,7 @@ class MidpointNormalize(colors.Normalize):
 def plot_matrix(mat, cmap='viridis', cmap_level_n=50, title='', vmin=None, vmax=None, axes=None):
     from matplotlib import cm as cm
     cmp = cm.get_cmap(cmap, cmap_level_n)
+    cm.rev
     matmin = np.min(mat)
     matabsmax = np.max(np.abs(mat))
     if vmax is None:
@@ -219,7 +220,7 @@ def violin_plot(data, positions, newfig=False):
     plt.vlines(inds, whiskers_min, whiskers_max, color='k', linestyle='-', lw=1)
 
 
-def circular_hist(data, alpha=0.2, bins=50, plot_mean=False):
+def circular_hist(data, alpha=0.2, bins=50, plot_mean=False, plot_ref=None):
     cc1, rr1 = np.histogram(data, bins=bins)
     cc_norm = cc1 / np.sum(cc1)
     width = rr1[1] - rr1[0]
@@ -248,7 +249,15 @@ def circular_hist(data, alpha=0.2, bins=50, plot_mean=False):
             linewidth=1.2,
             edgecolor="black",
             alpha=alpha)
-
+    if plot_ref is not None:
+        bars = plt.bar(
+            x=plot_ref,
+            height=np.max(cc_norm),
+            width=width / 10,
+            bottom=None,
+            linewidth=1.2,
+            edgecolor="black",
+            alpha=alpha)
 
 #  --------------------------------  --------------------------------  --------------------------------
 # stat, information theory

@@ -84,10 +84,12 @@ src = ica.get_sources(raw)
 src = src.get_data()
 mixing_mat = ica.get_components()
 
-i_cmp = 11  # this component is selected previously manualy
+i_cmp = 8  # 8 or 11  # this component is selected previously manualy
 src_i = src[i_cmp, :]
 topo_i = mixing_mat[:, i_cmp]
 
+n_samples = len(src_i)
+times = np.arange(0, n_samples) / sfreq
 # filter in the harmonic frequency ranges
 src_10 = filtfilt(b10, a10, src_i)
 src_20 = filtfilt(b20, a20, src_i)
@@ -108,7 +110,7 @@ plt.title('histogram of the phase difference of the whole signals')
 
 print('mean angle al==', stats.circmean(phase_diff_all))
 
-win_len = int(30 * sfreq)
+win_len = int(10 * sfreq)
 overlap_perc = 0.8
 start_step = int((1 - overlap_perc) * win_len)
 n_win = 10
@@ -119,9 +121,14 @@ phase_mean = []
 power_ratio = []
 pow_alpha = []
 pow_beta = []
+c_opt_seg = []
+phi_opt_seg = []
+fig = plt.figure()
+ax = plt.subplot(111)
 while 1:
     # win_no = 3
     win_no += 1
+    print(win_no)
     win_start = win_no * start_step
     win_end = win_start + win_len
     if win_end > len(scr10_h):
@@ -143,6 +150,11 @@ while 1:
     pow_alpha.append(np.mean(np.abs(s1)))
     pow_beta.append(np.mean(np.abs(s2)))
     # circular_hist(phase_diff, alpha=0.2)
+    # _, c_opt_seg1, phi_opt_seg1 = harmonic_removal_simple(s1, s2, sfreq, return_all=True)
+    # c_opt_seg.append(c_opt_seg1)
+    # phi_opt_seg.append(phi_opt_seg1)
+
+    psd(src_i[win_start:win_end], sfreq, f_max=45, fig=(fig, ax))
 
 
 fig = plt.figure()
@@ -150,6 +162,33 @@ circular_hist(phase_mean, alpha=1, bins=100, plot_mean=True)
 plt.title('histogram of the mean phase difference of the sliding windows')
 print('mean angle al==', stats.circmean(phase_mean))
 
+plt.figure()
+plt.hist(c_opt_seg)
+plt.vlines(c_opt, 0, 15)
+plt.vlines(np.mean(c_opt_seg), 0, 15, colors='red')
+
+fig = plt.figure()
+circular_hist(phi_opt_seg, alpha=1, bins=10, plot_mean=False, plot_ref=None)
+
+
+fig = plt.figure()
+
+cc1, rr1 = np.histogram(phi_opt_seg, bins=bins)
+cc_norm = cc1 / np.sum(cc1)
+width = rr1[1] - rr1[0]
+angles = rr1[:-1] + width / 2  # Compute the angle each bar is centered on
+
+ax = plt.subplot(projection='polar')
+
+# Draw bars
+bars = plt.bar(
+    x=angles,
+    height=cc_norm,
+    width=width,
+    bottom=None,
+    linewidth=.2,
+    edgecolor="lightblue",
+    alpha=alpha)
 
 
 

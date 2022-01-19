@@ -60,7 +60,7 @@ fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-64ch
 inv_op_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-64ch-inv.fif')
 # path_save_result = '/data/pt_02076/Harmonic_Removal/Simulations/realistic_sc3_sourcespace/'
 # path_save_result_root = '/NOBACKUP/Results/Harmoni/Simulations/'
-path_save_result_root = '/data/pt_02076/Harmonic_Removal/Simulations/'
+path_save_result_root = '/data/pt_02076/Harmonic_Removal/Simulations/broadband_svd/'
 
 # simulated data ----------------------
 fs = 256
@@ -121,7 +121,7 @@ b20, a20 = butter(N=2, Wn=np.array([16, 24]) / fs * 2, btype='bandpass')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Scenario: connections and number of sources ------------------------
-scenario = 3
+scenario = 2
 # n_sources = dict(n_source=4, n_nonsin=2, n_alpha=1, n_noise=50)
 # # n_connections = dict(n_alpha_conn=1, n_nonsin_conn=1, n_beta_conn=1)
 # n_connections = dict(n_alpha_conn=1, n_nonsin_conn=1, n_beta_conn=0, n_cfc_conn=1)
@@ -326,6 +326,8 @@ n_beta = n_source - n_alpha - n_nonsin
 path_save_result = op.join(path_save_result_root, 'realistic_sc' + str(scenario) + '_sourcespace')
 
 # ------------------------------------------------------------------------------------------------------------
+total_iter_n=100
+
 auc_beta = np.zeros((total_iter_n, 2))
 auc_cfc = np.zeros((total_iter_n, 2))
 fp_cfc = np.zeros((total_iter_n, 2))
@@ -335,7 +337,6 @@ auc_alpha_beta = np.zeros((total_iter_n, 2))
 dist_nonsin_beta_mat = np.zeros((total_iter_n, 2))
 dist_nonsin_cfc_mat = np.zeros((total_iter_n, 2))
 pattern_distance = np.zeros((total_iter_n, 4))
-
 for n_iter in range(total_iter_n):  # total_iter_n
     print(n_iter)
     name_file = combine_names('_', 'scenario', scenario, snr_str, inv_method, 'iter', n_iter)
@@ -356,11 +357,11 @@ for n_iter in range(total_iter_n):  # total_iter_n
     conn_mat_cfc_corr = dict1['conn_mat_cfc_corr']
 
     # rearrange the labels ------------------------------------------------------
-    beta_corr = np.abs(conn_mat_beta_corr[idx_sorted_lr, :][:, idx_sorted_lr])
-    beta_orig = np.abs(conn_mat_beta_orig[idx_sorted_lr, :][:, idx_sorted_lr])
-    alpha_orig = np.abs(conn_mat_alpha_orig[idx_sorted_lr, :][:, idx_sorted_lr])
-    cfc_orig = conn_mat_cfc_orig[idx_sorted_lr, :][:, idx_sorted_lr]
-    cfc_corr = conn_mat_cfc_corr[idx_sorted_lr, :][:, idx_sorted_lr]
+    beta_corr = np.abs(conn_mat_beta_corr[idx_sorted, :][:, idx_sorted])
+    beta_orig = np.abs(conn_mat_beta_orig[idx_sorted, :][:, idx_sorted])
+    alpha_orig = np.abs(conn_mat_alpha_orig[idx_sorted, :][:, idx_sorted])
+    cfc_orig = conn_mat_cfc_orig[idx_sorted, :][:, idx_sorted]
+    cfc_corr = conn_mat_cfc_corr[idx_sorted, :][:, idx_sorted]
 
     beta_orig1 = np.abs(conn_beta_orig1[idx_sorted, :][:, idx_sorted])
     alpha_orig1 = np.abs(conn_alpha_orig1[idx_sorted, :][:, idx_sorted])

@@ -106,7 +106,7 @@ from harmoni.harmonitools import harmonic_removal_simple
 # --------------------
 # Scenario
 # --------------------
-scenario = 1  # the scenario to be simulated - pls check the header for the scenario descriptions
+scenario = 3  # the scenario to be simulated - pls check the header for the scenario descriptions
 
 # in the following we encode the scenario in the parameters identifying which components exist in the signals
 if scenario == 1:
@@ -249,7 +249,7 @@ for n_iter in range(max_iter):
         if scenario == 7:
             y_sig2 = y_sig2 + c_y4 * y4
         else:
-            y_sig1 = y_sig1 + c_y2 * y2sig1
+            y_sig1 = y_sig1 + c_y2 * y2
             y_sig2 = y_sig2 + c_y4 * y4
 
     # --------------------------------------------------------------

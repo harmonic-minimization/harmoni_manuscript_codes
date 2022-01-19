@@ -499,7 +499,6 @@ def _plot_an_edge_bipartite(verts, ax, color):
     ax.add_patch(patch)
 
 
-
 def plot_connectivity_bipartite_2_prime(con, labels, strength_perc, edge_cmp, fig_title='', vmin=None, vmax=None,
                                         only_lbl=None, arrange='network', edge_thresh=None):
     """

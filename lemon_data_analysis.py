@@ -53,7 +53,8 @@ src_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-src.
 fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-fwd.fif')
 inv_method = 'eLORETA'
 condition = 'EC'
-dir_adjmat = op.join('/data/pt_02076/LEMON/lemon_processed_data/networks_bandpass/eloreta/Schaefer100/', condition)
+# dir_adjmat = op.join('/data/pt_02076/LEMON/lemon_processed_data/networks_bandpass/eloreta/Schaefer100/', condition)
+dir_adjmat = '/data/pt_02076/LEMON/lemon_processed_data/networks_coh_peak_detection_no_perm/'
 dir_raw_set = '/data/pt_nro109/Share/EEG_MPILMBB_LEMON/EEG_Preprocessed_BIDS_ID/EEG_Preprocessed/'
 
 """
@@ -154,13 +155,6 @@ n_subj = len(ids)
 
 # containers for the graphs and asymmetry index -----------------------------------
 
-# all graphs, thresholded at 95%
-conn12_thresh_all = np.zeros((n_parc, n_parc, n_subj))
-conn12_corr_thresh_all = np.zeros((n_parc, n_parc, n_subj))
-conn1_thresh_all = np.zeros((n_parc, n_parc, n_subj))
-conn2_thresh_all = np.zeros((n_parc, n_parc, n_subj))
-conn2_corr_thresh_all = np.zeros((n_parc, n_parc, n_subj))
-
 # all graphs, not thresholded
 conn1_all = np.zeros((n_parc, n_parc, n_subj))
 conn2_all = np.zeros((n_parc, n_parc, n_subj))
@@ -207,6 +201,8 @@ for i_subj, subj in enumerate(ids):
     conn12_symm_idx[i_subj, 1] = np.linalg.norm((conn12_corr - conn12_corr.T)) / (2) / np.linalg.norm(conn12_corr)
 
 
+conn12_all = zscore_matrix_fischer(conn12_all)
+conn12_corr_all = zscore_matrix_fischer(conn12_corr_all)
 # ----------------------------------------------------------------------------------------------------------------------
 # Harmoni and rsEEG data  - panels B & C & D & E
 # means
@@ -237,8 +233,11 @@ pvalue_zscores = np.zeros((n_parc, n_parc))
 statistics_all = np.zeros((n_parc, n_parc))
 for i1 in range(n_parc):
     for i2 in range(n_parc):
-        statistics_all[i1, i2], pvalue_zscores[i1, i2] = stats.ttest_rel(conn12_all_z[i1, i2, :],
-                                                                         conn12_corr_all_z[i1, i2, :])
+        statistics_all[i1, i2], pvalue_zscores[i1, i2] = stats.ttest_rel((conn12_all_z[i1, i2, :]),
+                                                                         (conn12_corr_all_z[i1, i2, :]))
+        # statistics_all[i1, i2], pvalue_zscores[i1, i2] = stats.ttest_rel(zscore_matrix_fischer(conn12_all_z[i1, i2, :]),
+        #                                                                  zscore_matrix_fischer(conn12_corr_all_z[i1, i2, :]))
+
 ind_nonsig = pvalue_zscores > 0.05 / n_parc ** 2  # Bonferroni correction
 pvalue2_zscores = np.ones((n_parc, n_parc))
 pvalue2_zscores[ind_nonsig] = 0
@@ -246,27 +245,62 @@ pvalue2_zscores[ind_nonsig] = 0
 
 # plot the networks -------------------------
 # the mean before Harmoni - panel B
-_, _ = plot_connectivity_bipartite_2_prime(net_mean_before,
+con_lbl_net_before, labels_s = plot_connectivity_bipartite_2_prime(net_mean_before,
                                            labels_sorted, 0, edge_cmp='Blues',
                                            fig_title='mean before',
                                            only_lbl=None, arrange='network')
 # the mean after Harmoni -  panel C
-_, _ = plot_connectivity_bipartite_2_prime(net_mean_after,
+con_lbl_net_after, _ = plot_connectivity_bipartite_2_prime(net_mean_after,
                                            labels_sorted, 0, edge_cmp='Blues',
                                            fig_title='mean after',
                                            only_lbl=None, arrange='network')
 
 # the positive difference - significant connections  - panel D
-_, _ = plot_connectivity_bipartite_2_prime(conn12_diff_z_mean_pos * pvalue2_zscores,
+con_lbl_net_diff_pos, _ = plot_connectivity_bipartite_2_prime(conn12_diff_z_mean_pos * pvalue2_zscores,
                                            labels_sorted, 0, edge_cmp='Purples',
                                            fig_title='pos difference',
                                            only_lbl=None, arrange='network')
 
 # the negative difference - significant connections -  panel E
- _, _ = plot_connectivity_bipartite_2_prime(conn12_diff_z_mean_neg * pvalue2_zscores,
+con_lbl_net_diff_neg, _ = plot_connectivity_bipartite_2_prime(conn12_diff_z_mean_neg * pvalue2_zscores,
                                            labels_sorted, 0, edge_cmp='Greens',
                                            fig_title='pos difference',
                                            only_lbl=None, arrange='network')
+
+fig, ax = plt.subplots()
+plot_matrix(con_lbl_net_before, cmap='RdBu', vmin=None, axes=ax)
+ax.set_yticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.set_xticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.xaxis.grid(True, which='minor', color = 'black', linestyle = '--', linewidth = 1)
+ax.yaxis.grid(True, which='minor', color = 'black', linestyle = '--', linewidth = 1)
+
+fig, ax = plt.subplots()
+plot_matrix(con_lbl_net_after, cmap='RdBu', vmin=0, axes=ax)
+ax.set_yticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.set_xticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.xaxis.grid(True, which='minor', color = 'black', linestyle='--', linewidth = 1)
+ax.yaxis.grid(True, which='minor', color = 'black', linestyle='--', linewidth = 1)
+
+fig, ax = plt.subplots()
+plot_matrix(con_lbl_net_diff_pos, cmap='PRGn_r', vmin=0, axes=ax)
+ax.set_yticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.set_xticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.xaxis.grid(True, which='minor', color = 'black', linestyle = '--', linewidth = 1)
+ax.yaxis.grid(True, which='minor', color = 'black', linestyle = '--', linewidth = 1)
+
+fig, ax = plt.subplots()
+plot_matrix(con_lbl_net_diff_neg, cmap='PRGn', vmin=0, axes=ax)
+ax.set_yticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.set_xticks([3.5, 16.5, 24.5, 27.5, 34.5, 40.5, 49.5, 57.5, 65.5, 70.5, 72.5, 79.5, 90.5], minor=True)
+ax.xaxis.grid(True, which='minor', color = 'black', linestyle = '--', linewidth = 1)
+ax.yaxis.grid(True, which='minor', color = 'black', linestyle = '--', linewidth = 1)
+
+
+
+# plot_matrix(net_mean_before)
+# plot_matrix(net_mean_after)
+# plot_matrix(conn12_diff_z_mean_pos*pvalue2_zscores)
+# plot_matrix(conn12_diff_z_mean_neg*pvalue2_zscores)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # test the decrease

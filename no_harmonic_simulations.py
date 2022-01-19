@@ -56,6 +56,10 @@ for n_iter in range(max_iter):
     coh_after[n_iter] = compute_phase_connectivity(x, ts2_corr, 1, 2, 'coh', type1='abs')
 
 
+dict1 = {'c_opt': c_opt, 'coh_before': coh_before, 'coh_after': coh_after}
+
+save_pickle('/data/pt_02076/Harmonic_Removal/Simulations/noharmonics_5h', dict1)
+
 plt.boxplot(np.concatenate((coh_before[:, np.newaxis], coh_after[:, np.newaxis]), axis=1), notch=True)
 plt.boxplot(c_opt, notch=True)
 
