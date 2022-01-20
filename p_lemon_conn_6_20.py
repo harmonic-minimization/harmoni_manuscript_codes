@@ -1,3 +1,5 @@
+# compute 1:4 6:6 Hz fundamental
+
 
 import os.path as op
 import itertools
@@ -6,27 +8,25 @@ import multiprocessing
 from functools import partial
 import time
 from matplotlib import pyplot as plt
-
+from matplotlib.backends.backend_pdf import PdfPages
 
 import numpy as np
 from numpy import pi
 
 import scipy.signal as signal
 import scipy.stats as stats
+from scipy.signal import butter, filtfilt
 import mne
 import mne.minimum_norm as minnorm
-from sklearn.decomposition import TruncatedSVD
 
 from tools_general import *
 from tools_signal import *
 from tools_meeg import *
 from tools_source_space import *
 from tools_connectivity import *
-from tools_multivariate import *
 from tools_connectivity_plot import *
 from tools_lemon_dataset import *
-from tools_harmonic_removal import *
-from tools_psd_peak import *
+from tools_signal import *
 
 
 # directories and settings -----------------------------------------------------
@@ -38,11 +38,8 @@ inv_method = 'eLORETA'
 subjects_dir = '/data/pt_02076/mne_data/MNE-fsaverage-data/'
 raw_set_dir = '/data/pt_nro109/EEG_LEMON/BIDS_IDS/EEG_Preprocessed_BIDS/'
 meta_file_path = '/data/pt_02076/LEMON/INFO/META_File_IDs_Age_Gender_Education_Drug_Smoke_SKID_LEMON.csv'
-error_file = '/data/pt_02076/LEMON/log_files/connectivities_2022_3.txt'
-path_peaks = '/data/pt_02076/LEMON/Products/peaks/EC/find_peaks/'
-save_dir_graphs = '/data/pt_02076/LEMON/lemon_processed_data/networks_coh_peak_detection_no_perm/'
-path_save_error_peaks ='/data/pt_02076/LEMON/Code_Outputs/error_peaks_alpha'
-path_save_explained_var = '/data/pt_02076/LEMON/Code_Outputs/explained_var/'
+path_save = '/data/pt_02076/LEMON/Code_Outputs/coh_6_20/'
+
 
 # subjects_dir =  '/NOBACKUP/mne_data/'
 # raw_set_dir = '/NOBACKUP/Data/lemon/LEMON_prep/'
@@ -51,8 +48,6 @@ path_save_explained_var = '/data/pt_02076/LEMON/Code_Outputs/explained_var/'
 
 src_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-src.fif')
 fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-fwd.fif')
-
-
 # -----------------------------------------------------
 # read the parcellation
 # -----------------------------------------------------
@@ -69,7 +64,8 @@ n_parc_range_prod = list(itertools.product(np.arange(n_parc), np.arange(n_parc))
 # -----------------------------------------------------
 sfreq = 250
 iir_params = dict(order=2, ftype='butter')
-
+b6, a6 = signal.butter(N=2, Wn=np.array([5.6, 7.6]) / sfreq * 2, btype='bandpass')
+b20, a20 = signal.butter(N=2, Wn=np.array([19, 21]) / sfreq * 2, btype='bandpass')
 # -----------------------------------------
 # the head
 # -----------------------------------------
@@ -83,17 +79,20 @@ src = fwd_fixed['src']
 # read raw from set
 # ---------------------------------------------------
 ids1 = select_subjects('young', 'male', 'right', meta_file_path)
+#IDs = listdir_restricted(raw_set_dir, '-EC-pruned with ICA.set')
 IDs = listdir_restricted(raw_set_dir, '_EC.set')
+# IDs = [id[:-23] for id in IDs]
 IDs = [id[:-7] for id in IDs]
 IDs = np.sort(np.intersect1d(IDs, ids1))
-# IDs_error = ['sub-010056', 'sub-010070', 'sub-010207', 'sub-010218', 'sub-010238', 'sub-010304', 'sub-010308', 'sub-010314', 'sub-010241']
-dict_alphapeaks = load_pickle(path_save_error_peaks)
-IDs_error = list(dict_alphapeaks.keys())
+n_subj = len(IDs)
 
-tstart = time.time()
+# -----------------------------------------------------
+# subjects
+# ---------------------------------------------------
+
 for i_subj, subj in enumerate(IDs):
-    print(' ******** subject %d/%d ************' % (i_subj + 1, len(IDs)))
-    # raw_name = op.join(raw_set_dir, subj + '-EC-pruned with ICA.set')
+    print(subj, '-subj' + str(i_subj) + ' of ' + str(n_subj) + ' *******************')
+    print('***************************************')
     raw_name = op.join(raw_set_dir, subj + '_EC.set')
     raw = read_eeglab_standard_chanloc(raw_name)  # , bads=['VEOG']
     assert (sfreq == raw.info['sfreq'])
@@ -103,44 +102,39 @@ for i_subj, subj in enumerate(IDs):
     n_chan = len(clab)
     inv_op = inverse_operator(raw_data.shape, fwd, raw_info)
 
-    if subj in IDs_error:
-        peak_alpha = dict_alphapeaks[subj]
-    else:
-        peaks_file = op.join(path_peaks, subj + '-peaks.npz')
-        peaks = np.load(peaks_file)
-        f_psd, psd_data = psd(raw_data, sfreq, 45, plot=False)
-        psd_mean = np.mean(psd_data, axis=0)
-        peak_alpha = find_narrowband_peaks(peaks['peaks'], peaks['peaks_ind'], peaks['pass_freq'],
-                                           np.array([8, 12]), 6, f_psd, psd_mean)
-
-    width = np.round(np.diff(peak_alpha.pass_band.ravel()).item() / 2, 2)
-    peak_beta = peak_alpha.peak.item() * 2
-    beta_band = [np.round(peak_beta - width, 2), np.round(peak_beta + width, 2)]
-    b10, a10 = signal.butter(N=2, Wn=peak_alpha.pass_band[:, :, 0] / sfreq * 2, btype='bandpass')
-    b20, a20 = signal.butter(N=2, Wn=np.asarray(beta_band) / sfreq * 2, btype='bandpass')
-
     # SVD broad band ---------------------
     raw.set_eeg_reference(projection=True)
     stc_raw = mne.minimum_norm.apply_inverse_raw(raw, inverse_operator=inv_op,
                                                  lambda2=0.05, method=inv_method, pick_ori='normal')
-    explained_variance = np.zeros((n_parc, 5))
-    for i_lbl, label in enumerate(labels):
-        lbl_idx, _ = label_idx_whole_brain(src, label)
-        data_lbl = stc_raw.data[lbl_idx, :]
-        svd = TruncatedSVD(n_components=5)
-        svd.fit(data_lbl)
-        explained_variance[i_lbl, :] = svd.singular_values_**2 / np.sum(svd.singular_values_**2)
-    file_name = op.join(path_save_explained_var, subj + '_svd_explainedvar')
-    save_pickle(file_name, explained_variance)
+    parcel_series_broad = extract_parcel_time_series(stc_raw.data, labels, src,
+                                                     mode='svd', n_select=1, n_jobs=1)
 
-t_stop = time.time() - tstart
+    parcel_series_6_b = [filtfilt(b6, a6, sig1) for sig1 in parcel_series_broad]
+    parcel_series_20_b = [filtfilt(b20, a20, sig1) for sig1 in parcel_series_broad]
 
+    # SVD narrow band ----------------
+    # 6Hz sources --------
+    # raw_6Hz = raw.copy()
+    # raw_6Hz.load_data()
+    # raw_6Hz.filter(l_freq=5.6, h_freq=7.6, method='iir', iir_params=iir_params)
+    # raw_6Hz.set_eeg_reference(projection=True)
+    # stc_6Hz_raw = mne.minimum_norm.apply_inverse_raw(raw_6Hz, inverse_operator=inv_op,
+    #                                                    lambda2=0.05, method=inv_method, pick_ori='normal')
+    # parcel_series_6 = extract_parcel_time_series(stc_6Hz_raw.data, labels, src,
+    #                                                  mode='svd', n_select=1, n_jobs=1)
 
-# -----------------------------------------------------
-# read explained vars
-# ---------------------------------------------------
-all_vars = np.zeros((len(IDs), n_parc))
-for i_subj, subj in enumerate(IDs):
-    file_name = op.join(path_save_explained_var, subj + '_svd_explainedvar')
-    explained_variance = load_pickle(file_name)
-    all_vars[i_subj, :] = explained_variance[:, 0]
+    # beta sources --------
+    # raw_beta = raw.copy()
+    # raw_beta.load_data()
+    # raw_beta.filter(l_freq=19, h_freq=21, method='iir', iir_params=iir_params)
+    # raw_beta.set_eeg_reference(projection=True)
+    # stc_beta_raw = mne.minimum_norm.apply_inverse_raw(raw_beta, inverse_operator=inv_op,
+    #                                                   lambda2=0.1, method=inv_method, pick_ori='normal')
+    # # plot_stc_power(stc_beta_raw, subjects_dir, hemi='both', clim='whole')
+    # parcel_series_20 = extract_parcel_time_series(stc_beta_raw.data, labels, src,
+    #                                                 mode='svd', n_select=1, n_jobs=1)
+    #
+    coh_6_20 = [compute_phase_connectivity(parcel_series_6_b[i], parcel_series_20_b[i], 1, 3, type1='abs') for i in
+                range(n_parc)]
+    save_file = op.join(path_save, subj + '-coh-6-20')
+    save_pickle(save_file, coh_6_20)
