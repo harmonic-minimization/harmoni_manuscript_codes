@@ -79,7 +79,7 @@ b20, a20 = signal.butter(N=2, Wn=np.array([19, 21]) / sfreq * 2, btype='bandpass
 b10, a10 = signal.butter(N=2, Wn=np.array([9, 11]) / sfreq * 2, btype='bandpass')
 b13, a13 = signal.butter(N=2, Wn=np.array([12.2, 14.2]) / sfreq * 2, btype='bandpass')
 b3, a3 = signal.butter(N=2, Wn=np.array([2.3, 4.3]) / sfreq * 2, btype='bandpass')
-
+b5, a5 = signal.butter(N=2, Wn=np.array([4, 6]) / sfreq * 2, btype='bandpass')
 # -----------------------------------------------------
 # coherence
 # ---------------------------------------------------
@@ -125,6 +125,7 @@ parcel_series_13 = [filtfilt(b13, a13, sig1) for sig1 in parcel_series_broad]
 parcel_series_20 = [filtfilt(b20, a20, sig1) for sig1 in parcel_series_broad]
 parcel_series_10 = [filtfilt(b10, a10, sig1) for sig1 in parcel_series_broad]
 parcel_series_3 = [filtfilt(b3, a3, sig1) for sig1 in parcel_series_broad]
+parcel_series_5 = [filtfilt(b5, a5, sig1) for sig1 in parcel_series_broad]
 
 compute_phase_connectivity(parcel_series_6[6], parcel_series_20[6], 1, 3, type1='abs')
 compute_phase_connectivity(parcel_series_6[7], parcel_series_20[7], 1, 3, type1='abs')
@@ -137,7 +138,8 @@ coh_20_10 = [compute_phase_connectivity(parcel_series_20[6], parcel_series_10[i]
                 range(n_parc)]
 
 
-
+save_parcels = [parcel_series_broad[i] for i in [6, 7, 70]]
+save_pickle('/data/p_02076/CODES/Codes_CurrentlyWorking/EEG_Networks/build_nets_python36/harmoni/harmoni-supplementary-data/parcels_R2C2', save_parcels)
 # -----------------------------------------------------
 # ROIs 6 vs 7 and 50
 # ---------------------------------------------------
@@ -145,6 +147,7 @@ i_parc1 = 6
 i_parc2 = 7
 
 parc1_coh_3_6 = compute_phase_connectivity(parcel_series_3[i_parc1], parcel_series_6[i_parc1], 1, 2, type1='abs')
+parc1_coh_5_20 = compute_phase_connectivity(parcel_series_5[i_parc1], parcel_series_20[i_parc1], 1, 4, type1='abs')
 parc1_coh_6_10 = compute_phase_connectivity(parcel_series_6[i_parc1], parcel_series_10[i_parc1], 2, 3, type1='abs')
 parc1_coh_6_20 = compute_phase_connectivity(parcel_series_6[i_parc1], parcel_series_20[i_parc1], 1, 3, type1='abs')
 parc1_coh_10_20 = compute_phase_connectivity(parcel_series_10[i_parc1], parcel_series_20[i_parc1], 1, 2, type1='abs')
@@ -159,14 +162,30 @@ coh_parc1_20_parc2_20 = compute_phase_connectivity(parcel_series_20[i_parc1], pa
 
 # correct parc1_6.6Hz and parc2_10Hz by 3.3hz each ---------------------------------
 parc1_6_corr_3 = harmonic_removal_simple(parcel_series_3[i_parc1], parcel_series_6[i_parc1], sfreq, n=2)
-parc2_10_corr_3 = harmonic_removal_simple(parcel_series_3[i_parc2], parcel_series_10[i_parc2], sfreq, n=3)
-coh_parc1_6corr3_parc2_10corr3 = compute_phase_connectivity(parc1_6_corr_3, parc2_10_corr_3, 2, 3, type1='abs')
+
+parc2_10hz_corr_5 = harmonic_removal_simple(parcel_series_5[i_parc2], parcel_series_10[i_parc2], sfreq, n=2)
+parc2_10_corr_5_3 = harmonic_removal_simple(parcel_series_3[i_parc2], parc2_10hz_corr_5, sfreq, n=3)
+
+coh_parc1_6corr3_parc2_10corr5 = compute_phase_connectivity(parc1_6_corr_3, parc2_10hz_corr_5, 2, 3, type1='abs')
+coh_parc1_6corr3_parc2_10corr5corr3 = compute_phase_connectivity(parc1_6_corr_3, parc2_10_corr_5_3, 2, 3, type1='abs')
 
 # correct parc1_20hz by 6.6hz and 10Hz  ---------------------------------
 parc1_20hz_corr_6 = harmonic_removal_simple(parcel_series_6[i_parc1], parcel_series_20[i_parc1], sfreq, n=3)
+parc1_20hz_corr_6_10 = harmonic_removal_simple(parcel_series_10[i_parc1], parc1_20hz_corr_6, sfreq, n=2)
+
 parc1_20hz_corr_10 = harmonic_removal_simple(parcel_series_10[i_parc1], parcel_series_20[i_parc1], sfreq, n=2)
 parc1_20hz_corr_10_6 = harmonic_removal_simple(parcel_series_6[i_parc1], parc1_20hz_corr_10, sfreq, n=3)
-coh_parc1_20corr10corr6_parc2_10 = compute_phase_connectivity(parcel_series_10[i_parc2], parc1_20hz_corr_10_6, 1, 2, type1='abs')
+parc1_20hz_corr_10_6_5 = harmonic_removal_simple(parcel_series_5[i_parc1], parc1_20hz_corr_10_6, sfreq, n=4)
+
+coh_parc1_20_corr6_parc2_10 = compute_phase_connectivity(parcel_series_10[i_parc2], parc1_20hz_corr_6, 1, 2, type1='abs')
+coh_parc1_20_corr6corr10_parc2_10 = compute_phase_connectivity(parcel_series_10[i_parc2], parc1_20hz_corr_6_10, 1, 2, type1='abs')
+
+coh_parc1_20_corr10_parc2_10 = compute_phase_connectivity(parcel_series_10[i_parc2], parc1_20hz_corr_10, 1, 2, type1='abs')
+coh_parc1_20_corr10corr6_parc2_10 = compute_phase_connectivity(parcel_series_10[i_parc2], parc1_20hz_corr_10_6, 1, 2, type1='abs')
+
+
+parc2_10hz_corr_5 = harmonic_removal_simple(parcel_series_5[i_parc2], parcel_series_10[i_parc2], sfreq, n=2)
+coh_parc1_20_corr10corr6corr5_parc2_10 = compute_phase_connectivity(parc2_10hz_corr_5, parc1_20hz_corr_10_6_5, 1, 2, type1='abs')
 
 
 
