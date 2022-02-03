@@ -90,7 +90,7 @@ dict_alphapeaks = load_pickle(path_save_error_peaks)
 IDs_error = list(dict_alphapeaks.keys())
 
 tstart = time.time()
-for i_subj, subj in enumerate(IDs[:30]):
+for i_subj, subj in enumerate(IDs[60:]):
     try:
         print(' ******** subject %d/%d ************' % (i_subj + 1, len(IDs)))
         # raw_name = op.join(raw_set_dir, subj + '-EC-pruned with ICA.set')

@@ -54,7 +54,7 @@ fwd_dir = op.join(subjects_dir, subject, 'bem', subject + '-oct' + _oct + '-fwd.
 inv_method = 'eLORETA'
 condition = 'EC'
 # dir_adjmat = op.join('/data/pt_02076/LEMON/lemon_processed_data/networks_bandpass/eloreta/Schaefer100/', condition)
-dir_adjmat = '/data/pt_02076/LEMON/lemon_processed_data/networks_coh_peak_detection_no_perm/'
+dir_adjmat = '/data/pt_02076/LEMON/lemon_processed_data/networks_coh_indiv_alphapeak_broadsvd_noperm/'
 dir_raw_set = '/data/pt_nro109/Share/EEG_MPILMBB_LEMON/EEG_Preprocessed_BIDS_ID/EEG_Preprocessed/'
 
 """
@@ -182,11 +182,11 @@ for i_subj, subj in enumerate(ids):
     conn1, pval1, pval1_ = load_pickle(pickle_name)
     pickle_name = op.join(dir_adjmat, subj + '-beta-beta')
     conn2, pval2, _ = load_pickle(pickle_name)
-    pickle_name = op.join(dir_adjmat, subj + '-beta-beta-corr')
+    pickle_name = op.join(dir_adjmat, subj + '-beta-beta-corr-grad')
     conn2_corr, pval2_corr, _ = load_pickle(pickle_name)
     pickle_name = op.join(dir_adjmat, subj + '-alpha-beta')
     conn12, pval12, _ = load_pickle(pickle_name)
-    pickle_name = op.join(dir_adjmat, subj + '-alpha-beta-corr')
+    pickle_name = op.join(dir_adjmat, subj + '-alpha-beta-corr-grad')
     conn12_corr, pval12_corr, _ = load_pickle(pickle_name)
 
     # save the original graphs
@@ -235,8 +235,6 @@ for i1 in range(n_parc):
     for i2 in range(n_parc):
         statistics_all[i1, i2], pvalue_zscores[i1, i2] = stats.ttest_rel((conn12_all_z[i1, i2, :]),
                                                                          (conn12_corr_all_z[i1, i2, :]))
-        # statistics_all[i1, i2], pvalue_zscores[i1, i2] = stats.ttest_rel(zscore_matrix_fischer(conn12_all_z[i1, i2, :]),
-        #                                                                  zscore_matrix_fischer(conn12_corr_all_z[i1, i2, :]))
 
 ind_nonsig = pvalue_zscores > 0.05 / n_parc ** 2  # Bonferroni correction
 pvalue2_zscores = np.ones((n_parc, n_parc))
@@ -246,26 +244,26 @@ pvalue2_zscores[ind_nonsig] = 0
 # plot the networks -------------------------
 # the mean before Harmoni - panel B
 con_lbl_net_before, labels_s = plot_connectivity_bipartite_2_prime(net_mean_before,
-                                           labels_sorted, 0, edge_cmp='Blues',
-                                           fig_title='mean before',
-                                           only_lbl=None, arrange='network')
+                                                                   labels_sorted, 0, edge_cmp='Blues',
+                                                                   fig_title='mean before',
+                                                                   only_lbl=None, arrange='network')
 # the mean after Harmoni -  panel C
 con_lbl_net_after, _ = plot_connectivity_bipartite_2_prime(net_mean_after,
-                                           labels_sorted, 0, edge_cmp='Blues',
-                                           fig_title='mean after',
-                                           only_lbl=None, arrange='network')
+                                                           labels_sorted, 0, edge_cmp='Blues',
+                                                           fig_title='mean after',
+                                                           only_lbl=None, arrange='network')
 
 # the positive difference - significant connections  - panel D
 con_lbl_net_diff_pos, _ = plot_connectivity_bipartite_2_prime(conn12_diff_z_mean_pos * pvalue2_zscores,
-                                           labels_sorted, 0, edge_cmp='Purples',
-                                           fig_title='pos difference',
-                                           only_lbl=None, arrange='network')
+                                                              labels_sorted, 0, edge_cmp='Purples',
+                                                              fig_title='pos difference',
+                                                              only_lbl=None, arrange='network')
 
 # the negative difference - significant connections -  panel E
 con_lbl_net_diff_neg, _ = plot_connectivity_bipartite_2_prime(conn12_diff_z_mean_neg * pvalue2_zscores,
-                                           labels_sorted, 0, edge_cmp='Greens',
-                                           fig_title='pos difference',
-                                           only_lbl=None, arrange='network')
+                                                              labels_sorted, 0, edge_cmp='Greens',
+                                                              fig_title='pos difference',
+                                                              only_lbl=None, arrange='network')
 
 fig, ax = plt.subplots()
 plot_matrix(con_lbl_net_before, cmap='RdBu', vmin=None, axes=ax)

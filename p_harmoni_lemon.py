@@ -11,6 +11,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import seaborn as sns
 import numpy as np
 from numpy import pi
+import matplotlib
 
 import scipy.signal as signal
 import scipy.stats as stats
@@ -61,9 +62,24 @@ for i_subj, subj in enumerate(IDs):
     coh_mat[i_subj, :] = np.squeeze(np.asanyarray(coh_mat_subj))
 
 plt.figure()
-sns.histplot(data=coh_mat.ravel())
-plt.xlabel('1:3 ROI coherence between 6.6Hz and 20 Hz')
+ax1 = plt.subplot(111)
+sns.histplot(data=coh_mat.ravel(), bins=np.logspace(np.log10(0.01), np.log10(0.5), 20))
+plt.xlabel('1:3 ROI coherence between 6.6Hz and 20 Hz', fontsize=12)
+plt.ylabel('Count', fontsize=12)
+plt.gca().set_xscale("log")
+plt.gca().set_yscale("log")
+ax1.set_xticks([0.05, 0.1, 0.2, 0.3, 0.4, 0.5])
+ax1.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
+# ax1.set_yticks([1, 2, 5, 100, 1000])
+# ax1.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
+plt.vlines(0.0479, 0, 1180, colors='k', linestyles='dashed')
+plt.text(0.04, 1200, '95th percentile', fontsize=12)
+plt.vlines(0.063, 0, 340, colors='k', linestyles='dashed')
+plt.text(0.057, 345, '99th percentile', fontsize=12)
+ax1.tick_params(axis='both', which='major', labelsize=12)
+plt.grid(True)
 # -----------------------------------------------------
 # SVD 30hz
 # ---------------------------------------------------
@@ -127,14 +143,14 @@ plt.xlabel('absolute coherence ')
 
 plt.figure()
 ax = plt.subplot(121)
-ax.errorbar(perc_range, np.mean(perc_alpha, axis=0), yerr=np.std(perc_alpha, axis=0), fmt='-o')
+ax.errorbar(perc_range, np.mean(perc_alpha, axis=0), yerr=np.std(perc_alpha, axis=0)/9, fmt='-o')
 plt.ylabel('percentile')
 plt.xlabel('percentage')
 plt.xticks(perc_range)
 plt.title('alpha band')
 
 ax = plt.subplot(122)
-ax.errorbar(perc_range, np.mean(perc_beta, axis=0), yerr=np.std(perc_beta, axis=0), fmt='-o')
+ax.errorbar(perc_range, np.mean(perc_beta, axis=0), yerr=np.std(perc_beta, axis=0)/9, fmt='-o')
 plt.ylabel('percentile')
 plt.xlabel('percentage')
 plt.xticks(perc_range)

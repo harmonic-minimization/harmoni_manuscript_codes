@@ -144,7 +144,7 @@ save_pickle('/data/p_02076/CODES/Codes_CurrentlyWorking/EEG_Networks/build_nets_
 # ROIs 6 vs 7 and 50
 # ---------------------------------------------------
 i_parc1 = 6
-i_parc2 = 7
+i_parc2 = 70
 
 parc1_coh_3_6 = compute_phase_connectivity(parcel_series_3[i_parc1], parcel_series_6[i_parc1], 1, 2, type1='abs')
 parc1_coh_5_20 = compute_phase_connectivity(parcel_series_5[i_parc1], parcel_series_20[i_parc1], 1, 4, type1='abs')

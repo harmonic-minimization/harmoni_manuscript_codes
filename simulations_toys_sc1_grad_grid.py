@@ -144,7 +144,7 @@ elif scenario == 7:
 # general settings
 # --------------------
 
-path_save_results = ''  # fill this in, if you wanna save the results. Otherwise leave it as ''
+path_save_results = '/data/p_02076/CODES/Codes_CurrentlyWorking/EEG_Networks/build_nets_python36/harmoni/harmoni-supplementary-data/'  # fill this in, if you wanna save the results. Otherwise leave it as ''
 path_save_fig = ''  # fill this in, if you wanna save the figures. Otherwise leave it as ''
 
 # in case you have the seeds for the simulations, fill this in. Otherwise leave it as ''
@@ -178,15 +178,20 @@ c_phi_opt_2 = np.empty((max_iter,))
 
 # the containers for the synchronization values
 synch_sig1x_sig1y = np.empty((max_iter,))
-synch_sig1x_yres1 = np.empty((max_iter,))
+synch_sig1x_yres1_grid = np.empty((max_iter,))
+synch_sig1x_yres1_grad = np.empty((max_iter,))
 synch_sig2x_sig2y = np.empty((max_iter,))
-synch_sig2x_yres2 = np.empty((max_iter,))
+synch_sig2x_yres2_grid = np.empty((max_iter,))
+synch_sig2x_yres2_grad = np.empty((max_iter,))
 synch_sig1x_sig2y = np.empty((max_iter,))
-synch_sig1x_yres2 = np.empty((max_iter,))
+synch_sig1x_yres2_grid = np.empty((max_iter,))
+synch_sig1x_yres2_grad = np.empty((max_iter,))
 synch_sig2x_sig1y = np.empty((max_iter,))
-synch_sig2x_yres1 = np.empty((max_iter,))
+synch_sig2x_yres1_grid = np.empty((max_iter,))
+synch_sig2x_yres1_grad = np.empty((max_iter,))
 synch_sig1y_sig2y = np.empty((max_iter,))
-synch_yres1_yres2 = np.empty((max_iter,))
+synch_yres1_yres2_grid = np.empty((max_iter,))
+synch_yres1_yres2_grad = np.empty((max_iter,))
 
 if path_seeds == '':
     seed = np.random.randint(low=0, high=2 ** 32, size=(max_iter,))
@@ -300,104 +305,116 @@ for n_iter in range(max_iter):
     sig2_y = filtfilt(b20, a20, sig2)
 
     # optimization for sig1 and sig2 -------------
-    y_sig1_res = harmonic_removal_simple(sig1_x, sig1_y, fs)
+    y_sig1_res_grad = harmonic_removal_simple(sig1_x, sig1_y, fs)
+    y_sig1_res_grid = harmonic_removal_simple(sig1_x, sig1_y, fs, method='grid')
 
-    y_sig2_res = harmonic_removal_simple(sig2_x, sig2_y, fs)
+    y_sig2_res_grad = harmonic_removal_simple(sig2_x, sig2_y, fs)
+    y_sig2_res_grid = harmonic_removal_simple(sig2_x, sig2_y, fs, method='grid')
 
     # compute the synchronization indices
     # we use the absolute coherency as the metric
     synch_sig1x_sig1y[n_iter] = compute_phaseconn_with_permtest(sig1_x, sig1_y, 1, 2, fs, plv_type='abs', coh=coh)
-    synch_sig1x_yres1[n_iter] = compute_phaseconn_with_permtest(sig1_x, y_sig1_res, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig1x_yres1_grad[n_iter] = compute_phaseconn_with_permtest(sig1_x, y_sig1_res_grad, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig1x_yres1_grid[n_iter] = compute_phaseconn_with_permtest(sig1_x, y_sig1_res_grid, 1, 2, fs, plv_type='abs', coh=coh)
 
     synch_sig2x_sig2y[n_iter] = compute_phaseconn_with_permtest(sig2_x, sig2_y, 1, 2, fs, plv_type='abs', coh=coh)
-    synch_sig2x_yres2[n_iter] = compute_phaseconn_with_permtest(sig2_x, y_sig2_res, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig2x_yres2_grad[n_iter] = compute_phaseconn_with_permtest(sig2_x, y_sig2_res_grad, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig2x_yres2_grid[n_iter] = compute_phaseconn_with_permtest(sig2_x, y_sig2_res_grid, 1, 2, fs, plv_type='abs', coh=coh)
 
     synch_sig1x_sig2y[n_iter] = compute_phaseconn_with_permtest(sig1_x, sig2_y, 1, 2, fs, plv_type='abs', coh=coh)
-    synch_sig1x_yres2[n_iter] = compute_phaseconn_with_permtest(sig1_x, y_sig2_res, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig1x_yres2_grad[n_iter] = compute_phaseconn_with_permtest(sig1_x, y_sig2_res_grad, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig1x_yres2_grid[n_iter] = compute_phaseconn_with_permtest(sig1_x, y_sig2_res_grid, 1, 2, fs, plv_type='abs', coh=coh)
 
     synch_sig2x_sig1y[n_iter] = compute_phaseconn_with_permtest(sig2_x, sig1_y, 1, 2, fs, plv_type='abs', coh=coh)
-    synch_sig2x_yres1[n_iter] = compute_phaseconn_with_permtest(sig2_x, y_sig1_res, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig2x_yres1_grad[n_iter] = compute_phaseconn_with_permtest(sig2_x, y_sig1_res_grad, 1, 2, fs, plv_type='abs', coh=coh)
+    synch_sig2x_yres1_grid[n_iter] = compute_phaseconn_with_permtest(sig2_x, y_sig1_res_grid, 1, 2, fs, plv_type='abs', coh=coh)
 
     synch_sig1y_sig2y[n_iter] = compute_phaseconn_with_permtest(sig1_y, sig2_y, 1, 1, fs, plv_type='abs', coh=coh)
-    synch_yres1_yres2[n_iter] = compute_phaseconn_with_permtest(y_sig1_res, y_sig2_res, 1, 1, fs, plv_type='abs', coh=coh)
+    synch_yres1_yres2_grad[n_iter] = compute_phaseconn_with_permtest(y_sig1_res_grad, y_sig2_res_grad, 1, 1, fs, plv_type='abs', coh=coh)
+    synch_yres1_yres2_grid[n_iter] = compute_phaseconn_with_permtest(y_sig1_res_grid, y_sig2_res_grid, 1, 1, fs, plv_type='abs', coh=coh)
 
 
 dict1 = {'seed': seed,
-         'synch_sig1x_sig1y': synch_sig1x_sig1y, 'synch_sig1x_yres1': synch_sig1x_yres1,
-         'synch_sig2x_sig2y': synch_sig2x_sig2y, 'synch_sig2x_yres2': synch_sig2x_yres2,
-         'synch_sig1x_sig2y': synch_sig1x_sig2y, 'synch_sig1x_yres2': synch_sig1x_yres2,
-         'synch_sig2x_sig1y': synch_sig2x_sig1y, 'synch_sig2x_yres1': synch_sig2x_yres1,
-         'synch_sig1y_sig2y': synch_sig1y_sig2y, 'synch_yres1_yres2': synch_yres1_yres2}
+         'synch_sig1x_sig1y': synch_sig1x_sig1y, 'synch_sig1x_yres1_grid': synch_sig1x_yres1_grid,
+         'synch_sig1x_yres1_grad': synch_sig1x_yres1_grad,
+         'synch_sig2x_sig2y': synch_sig2x_sig2y, 'synch_sig2x_yres2_grad': synch_sig2x_yres2_grad,
+         'synch_sig2x_yres2_grid': synch_sig2x_yres2_grid,
+         'synch_sig1x_sig2y': synch_sig1x_sig2y, 'synch_sig1x_yres2_grad': synch_sig1x_yres2_grad,
+         'synch_sig1x_yres2_grid': synch_sig1x_yres2_grid,
+         'synch_sig2x_sig1y': synch_sig2x_sig1y, 'synch_sig2x_yres1_grad': synch_sig2x_yres1_grad,
+         'synch_sig2x_yres1_grid': synch_sig2x_yres1_grid,
+         'synch_sig1y_sig2y': synch_sig1y_sig2y, 'synch_yres1_yres2_grad': synch_yres1_yres2_grad,
+         'synch_yres1_yres2_grid': synch_yres1_yres2_grid}
 if len(path_save_results):
-    save_pickle(path_save_results + '/toys_grad_' + 'scenario' + str(scenario), dict1)
+    save_pickle(path_save_results + '/toys_grad_grid_' + 'scenario' + str(scenario), dict1)
 
-
-# ------------------------------------
-# plotting
-# ------------------------------------
-
+#
+# # ------------------------------------
+# # plotting
+# # ------------------------------------
+#
+# # fig = plt.figure()
+# #
+# # ax = plt.subplot(231)
+# # plot_boxplot_paired(ax, dict1['plv_sig1x_sig1y'], dic1t['plv_sig1x_yres1'], datapoints=True,
+# #                     labels=['plv(s1_x, s1_y)', 'plv(s1_x, s1_y_res)'])
+# #
+# # ax = plt.subplot(232)
+# # plot_boxplot_paired(ax, dict1['plv_sig2x_sig2y'], dict1['plv_sig2x_yres2'], datapoints=True,
+# #                     labels=['plv(s2_x, s2_y)', 'plv(s2_x, s2_y_res)'])
+# #
+# # ax = plt.subplot(233)
+# # plot_boxplot_paired(ax, dict1['plv_sig1x_sig2y'], dict1['plv_sig1x_yres2'], datapoints=True,
+# #                     labels=['plv(s1_x, s2_y)', 'plv(s1_x, s2_y_res)'])
+# #
+# # ax = plt.subplot(234)
+# # plot_boxplot_paired(ax, dict1['plv_sig2x_sig1y'], dict1['plv_sig2x_yres1'], datapoints=True,
+# #                     labels=['plv(s2_x, s1_y)', 'plv(s2_x, s1_y_res)'])
+# #
+# # ax = plt.subplot(235)
+# # plot_boxplot_paired(ax, dict1['plv_sig1y_sig2y'], dict1['plv_yres1_yres2'], datapoints=True,
+# #                     labels=['plv(s1_y, s2_y)', 'plv(s1_y_res, s2_y_res)'])
+# #
+# # fname_fig = op.join(path_save_fig, 'sc' + str(scenario) + '.eps')
+# # fig.savefig(fname_fig, facecolor='white')
+#
+#
+# # ------------------------------------
+# # plot by loading your saved results
+# # ------------------------------------
+# # if you wanna load your saved results. uncomment the follwoing line:
+# # dict1 = load_pickle(path_save_results + 'toys_scenario' + str(scenario))
+#
+# data = (dict1['synch_sig1x_sig1y'][:, np.newaxis], dict1['synch_sig1x_yres1'][:, np.newaxis],
+#         dict1['synch_sig2x_sig2y'][:, np.newaxis], dict1['synch_sig2x_yres2'][:, np.newaxis],
+#         dict1['synch_sig1x_sig2y'][:, np.newaxis], dict1['synch_sig1x_yres2'][:, np.newaxis],
+#         dict1['synch_sig2x_sig1y'][:, np.newaxis], dict1['synch_sig2x_yres1'][:, np.newaxis],
+#         dict1['synch_sig1y_sig2y'][:, np.newaxis], dict1['synch_yres1_yres2'][:, np.newaxis])
+#
+# random_coh = random_synchronization_dist(1, 2, duration, f0=10, fs=fs, maxiter=5000)
+# perc95, perc99 = np.percentile(random_coh, [95, 99])
+#
 # fig = plt.figure()
+# plt.hlines([perc95, perc99], 0, 11, linestyle='--', color='lightgray')
 #
-# ax = plt.subplot(231)
-# plot_boxplot_paired(ax, dict1['plv_sig1x_sig1y'], dic1t['plv_sig1x_yres1'], datapoints=True,
-#                     labels=['plv(s1_x, s1_y)', 'plv(s1_x, s1_y_res)'])
+# plt.boxplot(np.concatenate(data, axis=1), notch=True)
+# violin_plot([random_coh], positions=[11])
 #
-# ax = plt.subplot(232)
-# plot_boxplot_paired(ax, dict1['plv_sig2x_sig2y'], dict1['plv_sig2x_yres2'], datapoints=True,
-#                     labels=['plv(s2_x, s2_y)', 'plv(s2_x, s2_y_res)'])
+# for k in range(max_iter):
+#     for i1 in range(0, 9, 2):
+#         plt.plot(np.ones((1, 1)) * (i1+1) + np.random.randn(1, 1) * 0.02, data[i1][k],
+#                  marker='.', color='lightskyblue', markersize=3)
+#         plt.plot(np.ones((1, 1)) * (i1+2) + np.random.randn(1, 1) * 0.02, data[i1+1][k],
+#                  marker='.', color='lightskyblue', markersize=3)
+#         x = np.array([i1+1, i1+2])
+#         y = np.array([data[i1][k], data[i1+1][k]])
+#         plt.plot(x, y, '-', linewidth=.05)
 #
-# ax = plt.subplot(233)
-# plot_boxplot_paired(ax, dict1['plv_sig1x_sig2y'], dict1['plv_sig1x_yres2'], datapoints=True,
-#                     labels=['plv(s1_x, s2_y)', 'plv(s1_x, s2_y_res)'])
+# if len(path_save_fig):
+#     fname_fig = op.join(path_save_fig, 'sc' + str(scenario) + '.eps')
+#     fig.savefig(fname_fig, facecolor='white')
 #
-# ax = plt.subplot(234)
-# plot_boxplot_paired(ax, dict1['plv_sig2x_sig1y'], dict1['plv_sig2x_yres1'], datapoints=True,
-#                     labels=['plv(s2_x, s1_y)', 'plv(s2_x, s1_y_res)'])
-#
-# ax = plt.subplot(235)
-# plot_boxplot_paired(ax, dict1['plv_sig1y_sig2y'], dict1['plv_yres1_yres2'], datapoints=True,
-#                     labels=['plv(s1_y, s2_y)', 'plv(s1_y_res, s2_y_res)'])
-#
-# fname_fig = op.join(path_save_fig, 'sc' + str(scenario) + '.eps')
-# fig.savefig(fname_fig, facecolor='white')
-
-
-# ------------------------------------
-# plot by loading your saved results
-# ------------------------------------
-# if you wanna load your saved results. uncomment the follwoing line:
-# dict1 = load_pickle(path_save_results + 'toys_scenario' + str(scenario))
-
-data = (dict1['synch_sig1x_sig1y'][:, np.newaxis], dict1['synch_sig1x_yres1'][:, np.newaxis],
-        dict1['synch_sig2x_sig2y'][:, np.newaxis], dict1['synch_sig2x_yres2'][:, np.newaxis],
-        dict1['synch_sig1x_sig2y'][:, np.newaxis], dict1['synch_sig1x_yres2'][:, np.newaxis],
-        dict1['synch_sig2x_sig1y'][:, np.newaxis], dict1['synch_sig2x_yres1'][:, np.newaxis],
-        dict1['synch_sig1y_sig2y'][:, np.newaxis], dict1['synch_yres1_yres2'][:, np.newaxis])
-
-random_coh = random_synchronization_dist(1, 2, duration, f0=10, fs=fs, maxiter=5000)
-perc95, perc99 = np.percentile(random_coh, [95, 99])
-
-fig = plt.figure()
-plt.hlines([perc95, perc99], 0, 11, linestyle='--', color='lightgray')
-
-plt.boxplot(np.concatenate(data, axis=1), notch=True)
-violin_plot([random_coh], positions=[11])
-
-for k in range(max_iter):
-    for i1 in range(0, 9, 2):
-        plt.plot(np.ones((1, 1)) * (i1+1) + np.random.randn(1, 1) * 0.02, data[i1][k],
-                 marker='.', color='lightskyblue', markersize=3)
-        plt.plot(np.ones((1, 1)) * (i1+2) + np.random.randn(1, 1) * 0.02, data[i1+1][k],
-                 marker='.', color='lightskyblue', markersize=3)
-        x = np.array([i1+1, i1+2])
-        y = np.array([data[i1][k], data[i1+1][k]])
-        plt.plot(x, y, '-', linewidth=.05)
-
-if len(path_save_fig):
-    fname_fig = op.join(path_save_fig, 'sc' + str(scenario) + '.eps')
-    fig.savefig(fname_fig, facecolor='white')
-
-# do the stats
-for ii in range(0, 9, 2):
-    res = stats.wilcoxon(data[ii].ravel(), data[ii+1].ravel())
-    print(res[1], res[1]*5)
+# # do the stats
+# for ii in range(0, 9, 2):
+#     res = stats.wilcoxon(data[ii].ravel(), data[ii+1].ravel())
+#     print(res[1], res[1]*5)
