@@ -65,6 +65,6 @@ additionally:
 ###### version 1.X
 `Oct. 2021` Codes contributing to the first bioRxiv preprint at https://doi.org/10.1101/2021.10.06.463319 
 
-
+`Feb. 2022`The current version is unstable and some scripts may raise errors of unknown functions etc. Soon the repository will be coherent again!
 
 
